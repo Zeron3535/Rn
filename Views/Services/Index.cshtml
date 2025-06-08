@@ -1,0 +1,341 @@
+@model List<ServiceCategory>
+@{
+    ViewData["Title"] = "Hizmetlerim";
+    ViewData["MetaDescription"] = "İzmir Balçova'da profesyonel kadın kuaförü ve güzellik salonu hizmetleri. Saç kesimi, boyama, bakım, manikür, pedikür ve daha fazlası için Tina Kuaför'e beklerim.";
+    ViewData["MetaKeywords"] = "İzmir Kuaför, İzmir Güzellik Salonu, İzmir Balçova Kuaför, İzmir Balçova Kadın Kuaför, İzmir Balçova Güzellik Salonu";
+}
+
+<!-- Services Hero Section - Tamamen Yeniden Tasarlandı -->
+<div style="position: relative; background-color: #b179ea; padding: 60px 0; overflow: hidden;">
+    <!-- Gradient overlay -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+                background: linear-gradient(135deg, rgba(177, 121, 234, 0.95), rgba(147, 94, 200, 0.9)); 
+                z-index: 1;"></div>
+
+    <div class="container" style="position: relative; z-index: 10;">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1 style="color: white; font-size: 2.5rem; margin-bottom: 20px; font-weight: 600;">Hizmetlerim ve Fiyatlarım</h1>
+
+                <p style="color: white; opacity: 0.9; font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px;">
+                    Tina Kuaför'de profesyonel olarak, en kaliteli ürünleri kullanarak
+                    size özel hizmet sunuyorum. Güzelliğinize değer katan bakım ve
+                    uygulamalarla kendinizi yenilemeye hazır olun.
+                </p>
+
+                <!-- IFRAME İLE TAM ÇÖZÜM -->
+                <div style="position: relative; z-index: 9999; max-width: 280px; height: 60px;">
+                    <iframe id="buttonFrame" src="about:blank" frameborder="0" 
+                            style="border: none; width: 100%; height: 100%; background: transparent; pointer-events: auto; position: relative; z-index: 99999;"></iframe>
+                </div>
+            </div>
+
+            <div class="col-lg-5 text-center" style="position: relative; z-index: 10;">
+                <img src="https://i.hizliresim.com/9lwenuc.png" alt="Tina Kuaför" 
+                     style="max-width: 250px; border: 4px solid white; border-radius: 10px; background-color: white;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Sayfa yüklendiğinde iframe içeriğini doldur
+    document.addEventListener('DOMContentLoaded', function() {
+        var iframe = document.getElementById('buttonFrame');
+        var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+        // iframe içeriğini oluştur
+        iframeDoc.open();
+        iframeDoc.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        overflow: hidden;
+                        font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        background: transparent;
+                    }
+
+                    .button-container {
+                        position: relative;
+                        z-index: 999999;
+                    }
+
+                    .custom-button {
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: transparent;
+                        color: white;
+                        border: 2px solid white;
+                        border-radius: 25px;
+                        padding: 12px 24px;
+                        font-size: 16px;
+                        text-decoration: none;
+                        min-width: 220px;
+                        font-weight: 500;
+                        transition: all 0.3s;
+                        cursor: pointer;
+                    }
+
+                    .custom-button:hover {
+                        background-color: #b179ea;
+                        transform: translateY(-3px);
+                        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                    }
+
+                    .custom-button i {
+                        margin-right: 8px;
+                    }
+                </style>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+            </head>
+            <body>
+                <div class="button-container">
+                    <button class="custom-button" onclick="parent.location.href='/randevu'">
+                        <i class="fas fa-calendar-alt"></i> Hemen Randevu Al
+                    </button>
+                </div>
+
+                <script>
+                    // Butonun doğrudan tıklanmasını sağla
+                    document.querySelector('.custom-button').addEventListener('click', function() {
+                        parent.location.href = '/randevu';
+                    });
+                <\/script>
+            </body>
+            </html>
+        `);
+        iframeDoc.close();
+    });
+</script>
+
+<!-- Alternatif Yöntem - Direkt Form ile Yönlendirme -->
+<form id="directForm" method="get" action="/randevu" style="display: none;"></form>
+
+<div class="container my-5">
+    @if (Model.Any())
+    {
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="card custom-card animate__animated animate__fadeInLeft">
+                    <div class="purple-top-bar"></div>
+                    <div class="card-body p-0">
+                        <h4 class="text-dark mb-0 p-3">Kategoriler</h4>
+                        <div class="list-group list-group-flush sticky-top" style="top: 20px; background: transparent;">
+                            @foreach (var category in Model)
+                            {
+                                <a href="#category-@category.Id" class="list-group-item list-group-item-action border-0 category-link">
+                                    <i class="fas fa-angle-right me-2"></i> @category.Name
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                @foreach (var category in Model)
+                {
+                    <div id="category-@category.Id" class="mb-5 animate__animated animate__fadeInUp">
+                        <div class="card custom-card mb-4">
+                            <div class="purple-top-bar"></div>
+                            <div class="card-body">
+                                <h2 class="text-dark border-bottom pb-2 mb-4">@category.Name</h2>
+
+                                @if (!string.IsNullOrEmpty(category.Description))
+                                {
+                                    <p class="text-secondary mb-4">@category.Description</p>
+                                }
+                            </div>
+                        </div>
+
+                        @if (category.Services.Any())
+                        {
+                            <div class="row">
+                                @foreach (var service in category.Services)
+                                {
+                                    <div class="col-md-6 mb-4">
+                                        <div class="card custom-card h-100 service-card">
+                                            <div class="purple-top-bar"></div>
+                                            <div class="card-body">
+                                                <h3 class="card-title h5 text-dark">@service.Name</h3>
+                                                @if (!string.IsNullOrEmpty(service.Description))
+                                                {
+                                                    <p class="card-text text-secondary">@service.Description</p>
+                                                }
+                                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                                    <span class="service-price" style="font-size: 1.25rem; font-weight: 600; color: #333;">₺@service.Price.ToString("N0")</span>
+                                                    <a href="/hizmet/@service.UrlSlug" class="detail-button" onclick="window.location.href='/hizmet/@service.UrlSlug'; return false;">
+                                                        Daha Fazla
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-info">
+                                Bu kategoride henüz hizmet bulunmamaktadır.
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Henüz hizmet kategorisi bulunmamaktadır.
+        </div>
+    }
+
+    <div class="mt-5 animate__animated animate__fadeInUp">
+        <div class="card custom-card">
+            <div class="purple-top-bar"></div>
+            <div class="card-body p-4">
+                <h2 class="card-title text-dark mb-3">Randevu Alın</h2>
+                <p class="card-text text-secondary">
+                    Hizmetlerim hakkında daha fazla bilgi almak veya randevu oluşturmak için bana ulaşabilirsiniz.
+                    Telefonla veya WhatsApp üzerinden iletişime geçebilir ya da online randevu sistemimi kullanabilirsiniz.
+                </p>
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <a href="/randevu" class="service-button randevu-btn" onclick="window.location.href='/randevu'; return false;">
+                        <i class="fas fa-calendar-alt me-2"></i> Online Randevu
+                    </a>
+
+                    <a href="https://wa.me/905375890642" class="service-button whatsapp-btn" onclick="window.location.href='https://wa.me/905375890642'; return false;">
+                        <i class="fab fa-whatsapp me-2"></i> WhatsApp ile İletişim
+                    </a>
+
+                    <a href="tel:+905375890642" class="service-button phone-btn" onclick="window.location.href='tel:+905375890642'; return false;">
+                        <i class="fas fa-phone me-2"></i> 0537 589 06 42
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Butonlar için özel stil */
+        .service-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 15px;
+            cursor: pointer !important;
+            min-width: 160px;
+            height: 45px;
+            text-decoration: none !important;
+            position: relative !important;
+            z-index: 9999 !important;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .randevu-btn {
+            background-color: #b179ea;
+            color: white !important;
+            border: none;
+        }
+
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: white !important;
+            border: none;
+        }
+
+        .phone-btn {
+            background-color: #6c757d;
+            color: white !important;
+            border: none;
+        }
+
+        .service-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .service-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .custom-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: white;
+            position: relative;
+        }
+
+        .custom-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .purple-top-bar {
+            height: 5px;
+            width: 100%;
+            background: linear-gradient(to right, #b179ea, #9d5de4);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .service-card {
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .service-price {
+            color: #b179ea !important;
+        }
+
+        .category-link {
+            color: #333;
+            transition: all 0.2s ease;
+            padding: 0.75rem 1.25rem;
+        }
+
+        .category-link:hover {
+            background-color: #f8f9fa;
+            color: #b179ea;
+            border-left: 3px solid #b179ea !important;
+            padding-left: calc(1.25rem - 3px);
+        }
+
+        .detail-button {
+            background-color: #b179ea;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 9999 !important;
+        }
+
+        .detail-button:hover {
+            background-color: #9d63db;
+            color: white;
+            transform: translateY(-2px);
+        }
+    </style>
+}

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://tinakuafor.com/</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://i.hizliresim.com/frlk5l2.jpg</image:loc>
+      <image:title>Tina Bayan Kuaför Güzellik Salonu - İzmir Balçova'nın En İyi Kuaförü</image:title>
+      <image:caption>İzmir Balçova'da profesyonel saç kesimi ve bakımı hizmetleri</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/anasayfa</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://i.hizliresim.com/frlk5l2.jpg</image:loc>
+      <image:title>Tina Bayan Kuaför Güzellik Salonu - İzmir Balçova'nın En İyi Kuaförü</image:title>
+      <image:caption>İzmir Balçova'da profesyonel saç kesimi ve bakımı hizmetleri</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/hizmetler</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/hizmetler/izmir-balcova-sac-hizmetleri</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://i.hizliresim.com/frlk5l2.jpg</image:loc>
+      <image:title>İzmir Balçova'da Profesyonel Saç Hizmetleri - Tina Kuaför</image:title>
+      <image:caption>İzmir Balçova'da en iyi saç kesimi ve bakımı</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/hizmetler/izmir-balcova-manikur-pedikur</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/hizmetler/izmir-balcova-agda-hizmetleri</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/hakkimda</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/iletisim</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/randevu</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/kullanim-kosullari</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/gizlilik-politikasi</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://tinakuafor.com/cerez-politikasi</loc>
+    <lastmod>2024-07-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset> 

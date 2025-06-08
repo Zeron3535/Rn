@@ -1,0 +1,120 @@
+@model ServiceDetailsViewModel
+@{
+    ViewData["Title"] = Model.Service.Name;
+    ViewData["MetaDescription"] = !string.IsNullOrEmpty(Model.Service.SeoDescription) ? Model.Service.SeoDescription : $"İzmir Balçova'da profesyonel {Model.Service.Name.ToLower()} hizmeti. Tina Kuaför'de kaliteli ve uygun fiyatlı hizmetler için hemen randevu alın.";
+    ViewData["MetaKeywords"] = !string.IsNullOrEmpty(Model.Service.SeoKeywords) ? Model.Service.SeoKeywords : $"İzmir {Model.Service.Name}, İzmir Balçova {Model.Service.Name}, Tina Kuaför";
+}
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Services")">Hizmetlerim</a></li>
+            @if (Model.Service.Category != null)
+            {
+                <li class="breadcrumb-item"><a href="@Url.Action("Category", "Services", new { slug = Model.Service.Category.UrlSlug })">@Model.Service.Category.Name</a></li>
+            }
+            <li class="breadcrumb-item active" aria-current="page">@Model.Service.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="mb-4">@Model.Service.Name</h1>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="service-price h3">₺@Model.Service.Price.ToString("N0")</span>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Service.Description))
+                    {
+                        <p class="lead">@Model.Service.Description</p>
+                    }
+                    else
+                    {
+                        <p class="lead">
+                            Tina Kuaför'de profesyonel olarak, en kaliteli ürünleri kullanarak size özel @Model.Service.Name.ToLower() hizmeti sunuyorum.
+                        </p>
+                    }
+
+                    <div class="mt-4">
+                        <a href="@Url.Action("Index", "Appointments")" class="btn btn-primary">
+                            <i class="fas fa-calendar-alt me-2"></i> Hemen Randevu Al
+                        </a>
+                        <a href="https://wa.me/905375890642" target="_blank" class="btn btn-success ms-2">
+                            <i class="fab fa-whatsapp me-2"></i> WhatsApp ile İletişim
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title h4">Hizmet Hakkında</h2>
+                    <p>
+                        @Model.Service.Name hizmetim, Tina Kuaför'de profesyonel olarak, en kaliteli ürünler kullanılarak tarafımdan sunulmaktadır.
+                    </p>
+                    <p>
+                        Randevu almak için yukarıdaki "Hemen Randevu Al" butonuna tıklayabilir veya WhatsApp üzerinden bana ulaşabilirsiniz.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title h4">İletişim Bilgileri</h2>
+                    <p><i class="fas fa-map-marker-alt text-primary me-2"></i> Onur, Salkım Sk. 9/A, 35330 Balçova/İzmir</p>
+                    <p><i class="fas fa-phone text-primary me-2"></i> 0537 589 06 42</p>
+
+                    <h3 class="h5 mt-4">Çalışma Saatleri</h3>
+                    @await Component.InvokeAsync("BusinessHours")
+
+                    <div class="mt-4">
+                        <a href="https://maps.app.goo.gl/UY7iXyj3ESW1p3BT6" target="_blank" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-map-marker-alt me-2"></i> Yol Tarifi Al
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.RelatedServices.Any())
+            {
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="card-title h4">İlgili Hizmetler</h2>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var relatedService in Model.RelatedServices)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <a href="@Url.Action("Details", "Services", new { slug = relatedService.UrlSlug })" class="text-decoration-none">
+                                        @relatedService.Name
+                                    </a>
+                                    <span class="badge bg-primary rounded-pill">₺@relatedService.Price.ToString("N0")</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4">
+        @if (Model.Service.Category != null)
+        {
+            <a href="@Url.Action("Category", "Services", new { slug = Model.Service.Category.UrlSlug })" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> @Model.Service.Category.Name Hizmetlerine Dön
+            </a>
+        }
+        else
+        {
+            <a href="@Url.Action("Index", "Services")" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Tüm Hizmetlere Dön
+            </a>
+        }
+    </div>
+</div>

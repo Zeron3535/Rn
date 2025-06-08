@@ -1,0 +1,159 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Ana Sayfa";
+    ViewData["MetaDescription"] = "İzmir Balçova'da profesyonel saç kesimi, boyama, manikür, pedikür ve ağda hizmetleri sunan Tina Bayan Kuaför Güzellik Salonu. Alanında uzman kadromuzla kaliteli hizmet.";
+    ViewData["MetaKeywords"] = "tina kuaför, izmir kuaför, balçova kuaför, saç kesim, saç boyama, manikür, pedikür, ağda, güzellik salonu, izmir güzellik salonu, balçova güzellik merkezi, bayan kuaför";
+}
+
+<!-- Hero Section -->
+<div class="hero-section glass-bg">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="animate__animated animate__fadeInDown">Tina Bayan Kuaför Güzellik Salonu</h1>
+                <p class="lead animate__animated animate__fadeInUp animate__delay-1s">@Model.SiteSettings.SiteSlogan</p>
+
+                <!-- Özel butonlar - görseldeki gibi -->
+                <div class="mt-4 hero-buttons-container">
+                    <a href="/randevu" class="hero-purple-button">
+                        <i class="fas fa-calendar-alt me-2"></i> Randevu Al
+                    </a>
+
+                    <a href="/hizmetler" class="hero-white-button">
+                        <i class="fas fa-list me-2"></i> Hizmetlerim
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 text-center animate__animated animate__fadeInRight animate__delay-1s">
+                <img src="https://i.hizliresim.com/9lwenuc.png" alt="Tina Kuaför" class="img-fluid rounded shadow parallax" data-speed="0.2">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Services Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-4 animate__animated animate__fadeInUp">Hizmetlerim</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 service-card card-glass tilt animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="card-body text-center">
+                    <i class="fas fa-cut fa-3x mb-3 text-white"></i>
+                    <h3 class="text-white">Saç Hizmetleri</h3>
+                    <p class="text-white-50">Profesyonel saç kesimi, boyama ve bakım hizmetleri.</p>
+                    <button onclick="window.location.href='/hizmetler/izmir-balcova-sac-hizmetleri'" class="btn btn-glass">Daha Fazla</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 service-card card-glass tilt animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="card-body text-center">
+                    <i class="fas fa-spa fa-3x mb-3 text-white"></i>
+                    <h3 class="text-white">Manikür & Pedikür</h3>
+                    <p class="text-white-50">Profesyonel tırnak bakımı ve güzellik hizmetleri.</p>
+                    <button onclick="window.location.href='/hizmetler/izmir-balcova-manikur-pedikur'" class="btn btn-glass">Daha Fazla</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 service-card card-glass tilt animate__animated animate__fadeInUp animate__delay-3s">
+                <div class="card-body text-center">
+                    <i class="fas fa-heart fa-3x mb-3 text-white"></i>
+                    <h3 class="text-white">Ağda Hizmetleri</h3>
+                    <p class="text-white-50">Profesyonel sir ağda ve epilasyon hizmetleri.</p>
+                    <button onclick="window.location.href='/hizmetler/izmir-balcova-agda-hizmetleri'" class="btn btn-glass">Daha Fazla</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-4 animate__animated animate__fadeInUp animate__delay-4s">
+        <button onclick="window.location.href='/hizmetler'" class="btn btn-primary">
+            <i class="fas fa-arrow-right me-2"></i> Tüm Hizmetlerimi Görüntüle
+        </button>
+    </div>
+</div>
+
+<!-- Testimonials Section -->
+<div class="container my-5">
+    <h2 class="text-center mb-4 animate__animated animate__fadeInUp">Müşterilerimin Değerli Düşünceleri</h2>
+
+    @if (Model.Testimonials.Any())
+    {
+        <div class="row">
+            @{
+                int delay = 1;
+                foreach (var testimonial in Model.Testimonials)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="testimonial-card card-glass tilt animate__animated animate__fadeInUp animate__delay-@(delay)s">
+                            <p class="text-white"><i class="fas fa-quote-left text-white-50 me-2"></i>@testimonial.Content</p>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="ms-1">
+                                    <h5 class="mb-0 text-white">@testimonial.CustomerName</h5>
+                                    <small class="text-white-50">@testimonial.CreatedAt.ToString("dd MMMM yyyy")</small>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(testimonial.Response))
+                            {
+                                <div class="testimonial-response">
+                                    <p><strong>Tina Kuaför Yanıtı:</strong> @testimonial.Response</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    delay = (delay % 3) + 1; // Cycle through delays 1, 2, 3
+                }
+            }
+        </div>
+
+        <div class="text-center mt-4 animate__animated animate__fadeInUp animate__delay-4s">
+            <a href="https://g.page/r/CZyfWHXpLAkcEBM/review" target="_blank" class="btn btn-glass">
+                <i class="fas fa-star me-2"></i> Yorum Yap
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info animate__animated animate__fadeIn">
+            Henüz yorum bulunmamaktadır.
+        </div>
+    }
+</div>
+
+<!-- Contact Section -->
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6 animate__animated animate__fadeInLeft">
+            <div class="card card-glass tilt p-4">
+                <h2 class="text-white mb-4">İletişim</h2>
+                <p class="d-flex align-items-center text-white mb-3">
+                    <i class="fas fa-map-marker-alt text-white-50 me-3"></i> 
+                    <span>@Model.SiteSettings.Address</span>
+                </p>
+                <p class="d-flex align-items-center text-white mb-3">
+                    <i class="fas fa-phone text-white-50 me-3"></i> 
+                    <span>@Model.SiteSettings.PhoneNumber</span>
+                </p>
+                @if (!string.IsNullOrEmpty(Model.SiteSettings.Email))
+                {
+                    <p class="d-flex align-items-center text-white mb-3">
+                        <i class="fas fa-envelope text-white-50 me-3"></i> 
+                        <span>@Model.SiteSettings.Email</span>
+                    </p>
+                }
+
+                <h3 class="text-white mt-4 mb-3">Çalışma Saatleri</h3>
+                @await Component.InvokeAsync("BusinessHours")
+
+                <div class="mt-4 d-flex flex-wrap gap-2">
+                    <a href="@Model.SiteSettings.WhatsAppUrl" target="_blank" class="btn btn-success">
+                        <i class="fab fa-whatsapp me-2"></i> WhatsApp ile İletişim
+                    </a>
+                    <a href="https://maps.app.goo.gl/UY7iXyj3ESW1p3BT6" target="_blank" class="btn btn-glass">
+                        <i class="fas fa-map-marker-alt me-2"></i> Yol Tarifi Al
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

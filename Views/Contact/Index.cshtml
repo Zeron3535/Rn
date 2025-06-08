@@ -1,0 +1,28 @@
+@model SiteSettings
+@{
+    ViewData["Title"] = "Çalışma Saatleri";
+    ViewData["MetaDescription"] = "Tina Bayan Kuaför güzellik salonunun çalışma saatleri ve randevu bilgileri.";
+    ViewData["MetaKeywords"] = "Tina Kuaför çalışma saatleri, Tina Kuaför güzellik salonu saatleri";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-body p-4">
+                    <h1 class="h3 text-center mb-4">Çalışma Saatleri</h1>
+
+                    <div class="mb-4">
+                        @await Component.InvokeAsync("BusinessHours")
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="@Url.Action("Index", "Appointments")" class="btn btn-primary">
+                            <i class="fas fa-calendar-alt me-2"></i> Hemen Randevu Al
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

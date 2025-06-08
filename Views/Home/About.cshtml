@@ -1,0 +1,324 @@
+@model SiteSettings
+@{
+    ViewData["Title"] = "Hakkımda";
+    ViewData["MetaDescription"] = "İzmir Balçova'da profesyonel kadın kuaförü ve güzellik salonu. Saç kesimi, boyama, bakım, manikür, pedikür ve daha fazlası için Tina Kuaför'e beklerim.";
+    ViewData["MetaKeywords"] = "İzmir Kuaför, İzmir Güzellik Salonu, İzmir Balçova Kuaför, Tina Kuaför Hakkında";
+}
+
+<!-- About Hero Section -->
+<div class="hero-section glass-bg" style="padding: 4rem 0;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 animate__animated animate__fadeInLeft">
+                <h1 class="display-5 text-white mb-4">Hakkımda</h1>
+                <p class="lead text-white opacity-90">
+                    Güzelliğinize değer katan, sizin için özel tasarlanmış bayan kuaför ve güzellik salonu deneyimi.
+                </p>
+            </div>
+            <div class="col-lg-6 text-center animate__animated animate__fadeInRight">
+                <img src="https://i.hizliresim.com/9lwenuc.png" alt="Tina Kuaför" class="img-fluid rounded-circle shadow" style="max-width: 250px; border: 4px solid white;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- About Me Card -->
+            <div class="card card-glass tilt animate__animated animate__fadeInUp mb-4">
+                <div class="card-body p-4">
+                    <h2 class="text-white mb-4">Hikayem</h2>
+
+                    <div class="mb-4">
+                        @if (!string.IsNullOrEmpty(Model.AboutContent))
+                        {
+                            <div class="text-white-90">
+                                @foreach (var paragraph in Model.AboutContent.Split("\n"))
+                                {
+                                    <p>@paragraph</p>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-white-90">
+                                <p>
+                                    Merhaba, ben Fatma. Tinakuaför'ü kurarken hayalim; müşterilerime sadece güzellik hizmeti sunmak değil, 
+                                    aynı zamanda kendilerini rahat, güvende ve özel hissedecekleri bir alan oluşturmaktı. ✨
+                                </p>
+                                <p>
+                                    Bugün bu hayalimi tek başıma, ama büyük bir özveriyle sürdürüyorum. Tinakuaför'de her şey birebir ilgi ve özenle gerçekleşir.
+                                </p>
+                                <p>
+                                    ✂️ Saç kesimi<br />
+                                    🎨 Renklendirme<br />
+                                    💆‍♀️ Bakım uygulamaları<br />
+                                    👗 Stil danışmanlığı<br />
+                                    ve daha birçok güzellik hizmetini, tamamen kişiye özel sunuyorum.
+                                </p>
+                                <p>
+                                    Hijyen, samimiyet ve profesyonellikten taviz vermeden, gelen her misafirimle tek tek ilgileniyorum. 
+                                    Randevular bir sıraya değil, sana özel zamana göre planlanır. ⏰
+                                </p>
+                                <p>
+                                    Burada; dinlenebileceğin, kendinle ilgilenebileceğin ve yenilenebileceğin bir deneyim yaşaman için buradayım.
+                                </p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Why Choose Me Card -->
+            <div class="card card-glass tilt animate__animated animate__fadeInUp animate__delay-1s mb-4">
+                <div class="card-body p-4">
+                    <h2 class="text-white mb-4">Neden Beni Tercih Etmelisiniz?</h2>
+                    <div class="row g-4 mb-3">
+                        <div class="col-md-6">
+                            <div class="feature-card p-3 rounded mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="feature-icon me-3">
+                                        <i class="fas fa-user-check fa-2x text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-white">Kişiye Özel Hizmet</h5>
+                                        <p class="text-white-50 mb-0">Her müşterime özel ilgi gösteriyor, ihtiyaçlarınıza uygun çözümler sunuyorum.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-card p-3 rounded mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="feature-icon me-3">
+                                        <i class="fas fa-star fa-2x text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-white">Profesyonel Deneyim</h5>
+                                        <p class="text-white-50 mb-0">Deneyimli ve uzman olarak en kaliteli hizmeti sunuyorum.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-card p-3 rounded mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="feature-icon me-3">
+                                        <i class="fas fa-gem fa-2x text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-white">Kaliteli Ürünler</h5>
+                                        <p class="text-white-50 mb-0">Sadece en kaliteli ve güvenilir ürünleri kullanıyorum.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="feature-card p-3 rounded mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="feature-icon me-3">
+                                        <i class="fas fa-shield-alt fa-2x text-white"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="text-white">Hijyenik Ortam</h5>
+                                        <p class="text-white-50 mb-0">Temizlik ve hijyen konusunda taviz vermiyorum.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Summary Card -->
+            <div class="card card-glass tilt animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="card-body p-4">
+                    <h2 class="text-white mb-4">Hizmetlerim</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="service-list-item d-flex align-items-center p-3 rounded mb-2 glass-item">
+                                <div class="service-icon me-3">
+                                    <i class="fas fa-cut fa-lg text-white"></i>
+                                </div>
+                                <span class="text-white">Saç Kesimi</span>
+                            </div>
+                            <div class="service-list-item d-flex align-items-center p-3 rounded mb-2 glass-item">
+                                <div class="service-icon me-3">
+                                    <i class="fas fa-paint-brush fa-lg text-white"></i>
+                                </div>
+                                <span class="text-white">Saç Boyama</span>
+                            </div>
+                            <div class="service-list-item d-flex align-items-center p-3 rounded mb-2 glass-item">
+                                <div class="service-icon me-3">
+                                    <i class="fas fa-magic fa-lg text-white"></i>
+                                </div>
+                                <span class="text-white">Keratin Bakımı</span>
+                            </div>
+                            <div class="service-list-item d-flex align-items-center p-3 rounded mb-2 glass-item">
+                                <div class="service-icon me-3">
+                                    <i class="fas fa-wind fa-lg text-white"></i>
+                                </div>
+                                <span class="text-white">Fön ve Maşa</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="service-list-item d-flex align-items-center p-3 rounded mb-2 glass-item">
+                                <div class="service-icon me-3">
+                                    <i class="fas fa-hand-sparkles fa-lg text-white"></i>
+                                </div>
+                                <span class="text-white">Manikür</span>
+                            </div>
+                            <div class="service-list-item d-flex align-items-center p-3 rounded mb-2 glass-item">
+                                <div class="service-icon me-3">
+                                    <i class="fas fa-shoe-prints fa-lg text-white"></i>
+                                </div>
+                                <span class="text-white">Pedikür</span>
+                            </div>
+                            <div class="service-list-item d-flex align-items-center p-3 rounded mb-2 glass-item">
+                                <div class="service-icon me-3">
+                                    <i class="fas fa-spa fa-lg text-white"></i>
+                                </div>
+                                <span class="text-white">Cilt Bakımı</span>
+                            </div>
+                            <div class="service-list-item d-flex align-items-center p-3 rounded mb-2 glass-item">
+                                <div class="service-icon me-3">
+                                    <i class="fas fa-heart fa-lg text-white"></i>
+                                </div>
+                                <span class="text-white">Ağda Hizmetleri</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <form action="/Appointments/Index" method="get" style="display:inline-block; margin-right: 10px; margin-bottom: 10px;">
+                            <button type="submit" style="position:relative; z-index:1000; background-color:#b179ea; color:white; border:2px solid white; border-radius:8px; padding:12px 20px; font-size:16px; min-width:180px; cursor:pointer;">
+                                <i class="fas fa-calendar-alt me-2"></i> Randevu Al
+                            </button>
+                        </form>
+                        
+                        <form action="/Services/Index" method="get" style="display:inline-block; margin-bottom: 10px;">
+                            <button type="submit" style="position:relative; z-index:1000; background-color:transparent; color:white; border:2px solid white; border-radius:8px; padding:12px 20px; font-size:16px; min-width:180px; cursor:pointer;">
+                                <i class="fas fa-list me-2"></i> Hizmetlerim
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Contact Info Card -->
+            <div class="card card-glass tilt animate__animated animate__fadeInRight mb-4">
+                <div class="card-body p-4">
+                    <h3 class="text-white mb-4">İletişim Bilgileri</h3>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-white mb-0">@Model.Address</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <p class="text-white mb-0">@Model.PhoneNumber</p>
+                        </div>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(Model.Email))
+                    {
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="flex-shrink-0">
+                                <div class="contact-icon">
+                                    <i class="fas fa-envelope text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <p class="text-white mb-0">@Model.Email</p>
+                            </div>
+                        </div>
+                    }
+
+                    <hr class="my-4 border-white opacity-25">
+
+                    <h4 class="text-white mb-3">Çalışma Saatleri</h4>
+                    @await Component.InvokeAsync("BusinessHours")
+
+                    <div class="mt-4">
+                        <a href="@Model.WhatsAppUrl" target="_blank" class="btn btn-success w-100 mb-2">
+                            <i class="fab fa-whatsapp me-2"></i> WhatsApp ile İletişim
+                        </a>
+                        <a href="https://maps.google.com/?q=@Model.Address" target="_blank" class="btn btn-glass w-100">
+                            <i class="fas fa-map-marker-alt me-2"></i> Yol Tarifi Al
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instagram Feed Card -->
+            <div class="card card-glass tilt animate__animated animate__fadeInRight animate__delay-1s">
+                <div class="card-body p-4">
+                    <h3 class="text-white mb-4">Sosyal Medya</h3>
+                    <a href="https://www.instagram.com/tina35izmir/" target="_blank" class="btn btn-outline-light w-100">
+                        <i class="fab fa-instagram me-2"></i> Instagram'da Takip Et
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .text-white-90 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+        }
+        
+        .glass-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+    </style>
+}

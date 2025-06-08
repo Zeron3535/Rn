@@ -1,0 +1,550 @@
+@model AppointmentViewModel
+@{
+    ViewData["Title"] = "Randevu Al";
+    ViewData["MetaDescription"] = "İzmir Balçova'da Tina Kuaför'den online randevu alın. Saç kesimi, boyama, bakım, manikür, pedikür ve daha fazlası için hemen randevu oluşturun.";
+    ViewData["MetaKeywords"] = "İzmir Kuaför Randevu, İzmir Balçova Kuaför Randevu, Tina Kuaför Randevu, İzmir Online Kuaför Randevu";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 0 1rem;
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        .step.active .step-number {
+            background: #0d6efd;
+            color: white;
+        }
+        .step.completed .step-number {
+            background: #198754;
+            color: white;
+        }
+        .step-content {
+            display: none;
+        }
+        .step-content.active {
+            display: block;
+        }
+        .service-card {
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .service-card:hover {
+            border-color: #0d6efd;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .service-card.selected {
+            border-color: #198754;
+            background-color: #f8fff9;
+        }
+        .time-slot {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .time-slot:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .time-slot.selected {
+            border-color: #198754;
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+        .time-slot.unavailable {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+            cursor: not-allowed;
+        }
+    </style>
+}
+
+<div class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">✨ Online Randevu</h1>
+        <p class="lead text-muted">Profesyonel güzellik hizmetlerimiz için kolayca randevu alın</p>
+    </div>
+
+    <!-- Aşama Göstergesi -->
+    <div class="step-indicator">
+        <div class="step active" id="step-1-indicator">
+            <div class="step-number">1</div>
+            <span>Hizmet Seçimi</span>
+        </div>
+        <div class="step" id="step-2-indicator">
+            <div class="step-number">2</div>
+            <span>Tarih & Saat</span>
+        </div>
+        <div class="step" id="step-3-indicator">
+            <div class="step-number">3</div>
+            <span>İletişim Bilgileri</span>
+        </div>
+        <div class="step" id="step-4-indicator">
+            <div class="step-number">4</div>
+            <span>Onay</span>
+        </div>
+    </div>
+
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-4">
+            <form id="appointmentForm" asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <!-- Aşama 1: Hizmet Seçimi -->
+                <div class="step-content active" id="step-1">
+                    <div class="text-center mb-4">
+                        <h3 class="h4 text-primary">💄 Hangi hizmetlerimizden yararlanmak istiyorsunuz?</h3>
+                        <p class="text-muted">Birden fazla hizmet seçebilirsiniz</p>
+                    </div>
+
+                    @if (Model.Categories.Any())
+                    {
+                        <div class="row">
+                            @foreach (var category in Model.Categories)
+                            {
+                                <div class="col-12 mb-4">
+                                    <h5 class="text-secondary mb-3">
+                                        <i class="fas fa-tag me-2"></i>@category.Name
+                                    </h5>
+                                    <div class="row">
+                                        @foreach (var service in Model.Services.Where(s => s.CategoryId == category.Id))
+                                        {
+                                            <div class="col-md-6 col-lg-4 mb-3">
+                                                <div class="card service-card h-100" data-service-id="@service.Id">
+                                                    <div class="card-body text-center">
+                                                        <h6 class="card-title">@service.Name</h6>
+                                                        <p class="card-text text-muted small">@service.DurationMinutes dk</p>
+                                                        <div class="h5 text-primary mb-0">₺@service.Price.ToString("N0")</div>
+                                                        <input type="checkbox" name="selectedServices" value="@service.Id" class="d-none service-checkbox">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>Henüz hizmet bulunmamaktadır.
+                        </div>
+                    }
+
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-primary btn-lg" id="nextToStep2" disabled>
+                            Devam Et <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aşama 2: Tarih & Saat Seçimi -->
+                <div class="step-content" id="step-2">
+                    <div class="text-center mb-4">
+                        <h3 class="h4 text-primary">📅 Hangi tarih ve saatte randevu almak istiyorsunuz?</h3>
+                        <p class="text-muted">Müsait tarih ve saatleri seçebilirsiniz</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h5 class="mb-3">Tarih Seçimi</h5>
+                            <input asp-for="Appointment.AppointmentDate" type="date" class="form-control form-control-lg datepicker" id="appointmentDate" required min="@DateTime.Today.ToString("yyyy-MM-dd")">
+                            <span asp-validation-for="Appointment.AppointmentDate" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h5 class="mb-3">Saat Seçimi</h5>
+                            <div id="timeSlots">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-clock me-2"></i>Lütfen önce tarih seçin.
+                                </div>
+                            </div>
+                            <input type="hidden" asp-for="Appointment.StartTime" id="startTime">
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary me-2" id="backToStep1">
+                            <i class="fas fa-arrow-left me-2"></i> Geri
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="nextToStep3" disabled>
+                            Devam Et <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aşama 3: İletişim Bilgileri -->
+                <div class="step-content" id="step-3">
+                    <div class="text-center mb-4">
+                        <h3 class="h4 text-primary">📞 İletişim bilgilerinizi giriniz</h3>
+                        <p class="text-muted">Randevu onayı için gerekli bilgiler</p>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label asp-for="Appointment.CustomerName" class="form-label">Ad Soyad</label>
+                                <input asp-for="Appointment.CustomerName" class="form-control form-control-lg" required>
+                                <span asp-validation-for="Appointment.CustomerName" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Appointment.PhoneNumber" class="form-label">Telefon Numarası</label>
+                                <input asp-for="Appointment.PhoneNumber" class="form-control form-control-lg" placeholder="05XX XXX XX XX" required>
+                                <span asp-validation-for="Appointment.PhoneNumber" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Appointment.Notes" class="form-label">Notlar (İsteğe Bağlı)</label>
+                                <textarea asp-for="Appointment.Notes" class="form-control" rows="3" placeholder="Randevunuzla ilgili özel isteklerinizi buraya yazabilirsiniz..."></textarea>
+                                <span asp-validation-for="Appointment.Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary me-2" id="backToStep2">
+                            <i class="fas fa-arrow-left me-2"></i> Geri
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" id="nextToStep4">
+                            Devam Et <i class="fas fa-arrow-right ms-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Aşama 4: Onay -->
+                <div class="step-content" id="step-4">
+                    <div class="text-center mb-4">
+                        <h3 class="h4 text-primary">✅ Randevu Özeti</h3>
+                        <p class="text-muted">Bilgilerinizi kontrol edin ve onaylayın</p>
+                    </div>
+
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div id="appointmentSummary">
+                                        <!-- JavaScript ile doldurulacak -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mt-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Randevunuz onaylandıktan sonra, belirttiğiniz telefon numarasına bilgilendirme mesajı gönderilecektir.
+                                Ayrıca randevunuzdan 10 dakika önce hatırlatma bildirimi alacaksınız.
+                            </div>
+
+                            <!-- Takvim Hatırlatması -->
+                            <div class="card mt-3">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">📱 Takvim Hatırlatması</h6>
+                                    <p class="card-text small text-muted">Randevunuzu takviminize eklemek ister misiniz?</p>
+                                    <button type="button" class="btn btn-outline-primary btn-sm" id="addToCalendar">
+                                        <i class="fas fa-calendar-plus me-1"></i> Takvime Ekle
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="button" class="btn btn-outline-secondary me-2" id="backToStep3">
+                            <i class="fas fa-arrow-left me-2"></i> Geri
+                        </button>
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-check me-2"></i> Randevuyu Onayla
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- WhatsApp İletişim -->
+    <div class="text-center mt-4">
+        <p class="text-muted">Sorularınız için</p>
+        <a href="https://wa.me/905375890642" target="_blank" class="btn btn-success">
+            <i class="fab fa-whatsapp me-2"></i> WhatsApp ile İletişim
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
+    <script>
+        let currentStep = 1;
+        let selectedServices = [];
+        let selectedDate = '';
+        let selectedTime = '';
+        let appointmentData = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeStepSystem();
+            initializeDatePicker();
+            initializeServiceSelection();
+            initializeTimeSlotSelection();
+            initializeFormValidation();
+        });
+
+        function initializeStepSystem() {
+            // Aşama geçiş butonları
+            document.getElementById('nextToStep2').addEventListener('click', () => goToStep(2));
+            document.getElementById('nextToStep3').addEventListener('click', () => goToStep(3));
+            document.getElementById('nextToStep4').addEventListener('click', () => goToStep(4));
+            
+            document.getElementById('backToStep1').addEventListener('click', () => goToStep(1));
+            document.getElementById('backToStep2').addEventListener('click', () => goToStep(2));
+            document.getElementById('backToStep3').addEventListener('click', () => goToStep(3));
+
+            // Takvim ekleme butonu
+            document.getElementById('addToCalendar').addEventListener('click', addToCalendar);
+        }
+
+        function goToStep(step) {
+            // Mevcut aşamayı gizle
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Yeni aşamayı göster
+            document.getElementById(`step-${step}`).classList.add('active');
+            
+            // Aşama göstergelerini güncelle
+            updateStepIndicators(step);
+            
+            currentStep = step;
+
+            // Aşama 4'e geçerken özeti güncelle
+            if (step === 4) {
+                updateAppointmentSummary();
+            }
+        }
+
+        function updateStepIndicators(activeStep) {
+            for (let i = 1; i <= 4; i++) {
+                const indicator = document.getElementById(`step-${i}-indicator`);
+                indicator.classList.remove('active', 'completed');
+                
+                if (i < activeStep) {
+                    indicator.classList.add('completed');
+                } else if (i === activeStep) {
+                    indicator.classList.add('active');
+                }
+            }
+        }
+
+        function initializeServiceSelection() {
+            document.querySelectorAll('.service-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const serviceId = this.dataset.serviceId;
+                    const checkbox = this.querySelector('.service-checkbox');
+                    
+                    if (this.classList.contains('selected')) {
+                        this.classList.remove('selected');
+                        checkbox.checked = false;
+                        selectedServices = selectedServices.filter(id => id !== serviceId);
+                    } else {
+                        this.classList.add('selected');
+                        checkbox.checked = true;
+                        selectedServices.push(serviceId);
+                    }
+                    
+                    // Devam et butonunu aktif/pasif yap
+                    document.getElementById('nextToStep2').disabled = selectedServices.length === 0;
+                });
+            });
+        }
+
+        function initializeDatePicker() {
+            flatpickr(".datepicker", {
+                locale: "tr",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                disable: [
+                    function(date) {
+                        return date < new Date().setHours(0,0,0,0);
+                    }
+                ],
+                onChange: function(selectedDates, dateStr, instance) {
+                    selectedDate = dateStr;
+                    loadTimeSlots();
+                }
+            });
+        }
+
+        function initializeTimeSlotSelection() {
+            // Time slot seçimi için event delegation kullan
+            document.getElementById('timeSlots').addEventListener('click', function(e) {
+                if (e.target.classList.contains('time-slot') && !e.target.classList.contains('unavailable')) {
+                    // Önceki seçimi temizle
+                    document.querySelectorAll('.time-slot').forEach(slot => {
+                        slot.classList.remove('selected');
+                    });
+                    
+                    // Yeni seçimi işaretle
+                    e.target.classList.add('selected');
+                    selectedTime = e.target.dataset.time;
+                    document.getElementById('startTime').value = selectedTime;
+                    
+                    // Devam et butonunu aktif yap
+                    document.getElementById('nextToStep3').disabled = false;
+                }
+            });
+        }
+
+        function loadTimeSlots() {
+            if (!selectedDate || selectedServices.length === 0) return;
+
+            const timeSlotsContainer = document.getElementById('timeSlots');
+            timeSlotsContainer.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Müsait saatler yükleniyor...</div>';
+
+            fetch(`/Appointments/GetAvailableTimeSlots?date=${selectedDate}&serviceIds=${selectedServices.join(',')}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.timeSlots.length > 0) {
+                        let html = '<div class="row">';
+                        data.timeSlots.forEach(slot => {
+                            const now = new Date();
+                            const slotDate = new Date(selectedDate + 'T' + slot.time);
+                            const isUnavailable = slotDate <= now;
+                            
+                            html += `
+                                <div class="col-6 col-md-4 col-lg-3 mb-2">
+                                    <div class="time-slot ${isUnavailable ? 'unavailable' : ''}" data-time="${slot.time}">
+                                        ${slot.displayTime}
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        timeSlotsContainer.innerHTML = html;
+                    } else {
+                        timeSlotsContainer.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-triangle me-2"></i>Bu tarih için müsait saat bulunmamaktadır.</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading time slots:', error);
+                    timeSlotsContainer.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Saatler yüklenirken bir hata oluştu.</div>';
+                });
+        }
+
+        function updateAppointmentSummary() {
+            const customerName = document.querySelector('[name="Appointment.CustomerName"]').value;
+            const phoneNumber = document.querySelector('[name="Appointment.PhoneNumber"]').value;
+            const notes = document.querySelector('[name="Appointment.Notes"]').value;
+
+            // Seçilen hizmetleri al
+            const selectedServiceElements = document.querySelectorAll('.service-card.selected');
+            let servicesHtml = '';
+            let totalPrice = 0;
+            let totalDuration = 0;
+
+            selectedServiceElements.forEach(card => {
+                const serviceName = card.querySelector('.card-title').textContent;
+                const serviceDuration = parseInt(card.querySelector('.card-text').textContent);
+                const servicePrice = parseInt(card.querySelector('.h5').textContent.replace(/[^\d]/g, ''));
+                
+                totalPrice += servicePrice;
+                totalDuration += serviceDuration;
+                
+                servicesHtml += `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>${serviceName} (${serviceDuration} dk)</span>
+                        <span class="fw-bold">₺${servicePrice}</span>
+                    </div>
+                `;
+            });
+
+            const summaryHtml = `
+                <h6 class="mb-3">👤 Müşteri Bilgileri</h6>
+                <p><strong>Ad Soyad:</strong> ${customerName}</p>
+                <p><strong>Telefon:</strong> ${phoneNumber}</p>
+                ${notes ? `<p><strong>Notlar:</strong> ${notes}</p>` : ''}
+                
+                <hr>
+                
+                <h6 class="mb-3">💄 Seçilen Hizmetler</h6>
+                ${servicesHtml}
+                <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
+                    <strong>Toplam</strong>
+                    <strong class="text-primary">₺${totalPrice}</strong>
+                </div>
+                
+                <hr>
+                
+                <h6 class="mb-3">📅 Randevu Detayları</h6>
+                <p><strong>Tarih:</strong> ${new Date(selectedDate).toLocaleDateString('tr-TR')}</p>
+                <p><strong>Saat:</strong> ${selectedTime}</p>
+                <p><strong>Süre:</strong> ${totalDuration} dakika</p>
+            `;
+
+            document.getElementById('appointmentSummary').innerHTML = summaryHtml;
+        }
+
+        function addToCalendar() {
+            const customerName = document.querySelector('[name="Appointment.CustomerName"]').value;
+            const startDateTime = new Date(selectedDate + 'T' + selectedTime);
+            const endDateTime = new Date(startDateTime.getTime() + (60 * 60 * 1000)); // 1 saat ekle
+
+            const title = `Tina Kuaför Randevusu - ${customerName}`;
+            const details = `Tina Kuaför'de randevunuz bulunmaktadır.`;
+            const location = 'Onur, Salkım Sk. 9/A, 35330 Balçova/İzmir';
+
+            // Google Calendar URL oluştur
+            const googleCalendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startDateTime.toISOString().replace(/[-:]/g, '').split('.')[0]}Z/${endDateTime.toISOString().replace(/[-:]/g, '').split('.')[0]}Z&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
+
+            window.open(googleCalendarUrl, '_blank');
+        }
+
+        function initializeFormValidation() {
+            document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+                if (selectedServices.length === 0) {
+                    e.preventDefault();
+                    alert('Lütfen en az bir hizmet seçin.');
+                    return false;
+                }
+                
+                if (!selectedDate) {
+                    e.preventDefault();
+                    alert('Lütfen randevu tarihi seçin.');
+                    return false;
+                }
+                
+                if (!selectedTime) {
+                    e.preventDefault();
+                    alert('Lütfen randevu saati seçin.');
+                    return false;
+                }
+            });
+        }
+    </script>
+}

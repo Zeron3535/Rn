@@ -1,0 +1,11 @@
+---
+applications:
+- name: tinakuafor
+  memory: 512M
+  buildpacks:
+  - https://github.com/paketo-buildpacks/dotnet-core
+  env:
+    BP_DOTNET_FRAMEWORK_VERSION: 6.0.0
+    BP_DOTNET_SDK_VERSION: 6.0.x
+    ASPNETCORE_URLS: http://+:8080
+    PORT: 8080

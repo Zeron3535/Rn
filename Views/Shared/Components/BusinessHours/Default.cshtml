@@ -1,0 +1,145 @@
+@model List<BusinessHours>
+
+@{
+    var groupedDays = new List<(string Name, string Time, bool IsOpen)>();
+    var openDaysByWeek = Model.Where(d => d.IsOpen).OrderBy(d => GetDayOrder(d.DayOfWeek)).ToList();
+    var closedDays = Model.Where(d => !d.IsOpen).OrderBy(d => GetDayOrder(d.DayOfWeek)).ToList();
+
+    if (openDaysByWeek.Count > 0)
+    {
+        // Group consecutive days with same hours
+        var currentGroup = new List<BusinessHours> { openDaysByWeek[0] };
+        
+        for (int i = 1; i < openDaysByWeek.Count; i++)
+        {
+            var current = openDaysByWeek[i];
+            var prev = openDaysByWeek[i - 1];
+            
+            // Group days if they have same hours and are consecutive
+            if (current.OpenTime == prev.OpenTime && 
+                current.CloseTime == prev.CloseTime &&
+                GetDayOrder(current.DayOfWeek) == GetDayOrder(prev.DayOfWeek) + 1)
+            {
+                currentGroup.Add(current);
+            }
+            else
+            {
+                // Add the group and start a new one
+                AddGroupToList(groupedDays, currentGroup);
+                currentGroup = new List<BusinessHours> { current };
+            }
+        }
+        
+        // Add the last group
+        AddGroupToList(groupedDays, currentGroup);
+    }
+    
+    // Add closed days
+    foreach (var day in closedDays)
+    {
+        groupedDays.Add((GetDayName(day.DayOfWeek), "", false));
+    }
+
+    // Final sort by day order
+    groupedDays = groupedDays.OrderBy(g => GetFirstDayOrder(g.Name)).ToList();
+    
+    // Check if we're in the contact glass card by checking the ViewContext path
+    bool isInContactCard = ViewContext.View.Path.Contains("Index") && ViewContext.HttpContext.Request.Path == "/";
+}
+
+<div class="@(isInContactCard ? "text-white-50" : "")">
+    @foreach (var group in groupedDays)
+    {
+        <div class="d-flex justify-content-between @(isInContactCard ? "border-white-50" : "") border-bottom pb-2 mb-2">
+            <span>@group.Name</span>
+            @if (group.IsOpen)
+            {
+                <span>@group.Time</span>
+            }
+            else
+            {
+                <span class="badge bg-danger">Kapalı</span>
+            }
+        </div>
+    }
+</div>
+
+@functions {
+    void AddGroupToList(List<(string Name, string Time, bool IsOpen)> list, List<BusinessHours> group)
+    {
+        if (!group.Any()) return;
+        
+        var first = group.First();
+        var last = group.Last();
+        
+        string name;
+        if (group.Count == 1)
+        {
+            name = GetDayName(first.DayOfWeek);
+        }
+        else
+        {
+            name = $"{GetDayName(first.DayOfWeek)} - {GetDayName(last.DayOfWeek)}";
+        }
+        
+        string time = $"{first.OpenTime} - {first.CloseTime}";
+        list.Add((name, time, true));
+    }
+    
+    int GetDayOrder(string day)
+    {
+        switch (day)
+        {
+            case "Monday": return 1;
+            case "Tuesday": return 2;
+            case "Wednesday": return 3;
+            case "Thursday": return 4;
+            case "Friday": return 5;
+            case "Saturday": return 6;
+            case "Sunday": return 7;
+            default: return 0;
+        }
+    }
+    
+    string GetDayName(string day)
+    {
+        switch (day)
+        {
+            case "Monday": return "Pazartesi";
+            case "Tuesday": return "Salı";
+            case "Wednesday": return "Çarşamba";
+            case "Thursday": return "Perşembe";
+            case "Friday": return "Cuma";
+            case "Saturday": return "Cumartesi";
+            case "Sunday": return "Pazar";
+            default: return day;
+        }
+    }
+    
+    int GetFirstDayOrder(string name)
+    {
+        // For day ranges (e.g. "Monday - Friday"), extract the first day
+        if (name.Contains(" - "))
+        {
+            string firstDay = name.Split(" - ")[0];
+            return GetDayOrderFromName(firstDay);
+        }
+        
+        return GetDayOrderFromName(name);
+    }
+    
+    int GetDayOrderFromName(string name)
+    {
+        switch (name)
+        {
+            case "Pazartesi": return 1;
+            case "Salı": return 2;
+            case "Çarşamba": return 3;
+            case "Perşembe": return 4;
+            case "Cuma": return 5;
+            case "Cumartesi": return 6;
+            case "Pazar": return 7;
+            default: return 0;
+        }
+    }
+} 

@@ -1,0 +1,15 @@
+# Ignore Docker-related files
+Dockerfile
+.dockerignore
+
+# Ignore development files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Don't ignore essential project files
+# bin/
+# obj/

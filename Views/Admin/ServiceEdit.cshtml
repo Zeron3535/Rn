@@ -1,0 +1,182 @@
+@model ServiceEditViewModel
+@{
+    ViewData["Title"] = "Hizmet Düzenle";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Hizmet Düzenle</h1>
+        <a href="@Url.Action("Services", "Admin")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Hizmetlere Dön
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="ServiceEdit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="Service.Id" />
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label asp-for="Service.Name" class="form-label">Hizmet Adı</label>
+                            <input asp-for="Service.Name" class="form-control slug-source" data-slug-target="#urlSlug" required />
+                            <span asp-validation-for="Service.Name" class="text-danger"></span>
+                            <small class="form-text text-muted">Hizmetin tam adını girin. Örn: "İzmir Balçova Saç Kesimi"</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Service.CategoryId" class="form-label">Kategori</label>
+                            <select asp-for="Service.CategoryId" class="form-select" required>
+                                <option value="">-- Kategori Seçin --</option>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="Service.CategoryId" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Service.Price" class="form-label">Fiyat (₺)</label>
+                                    <input asp-for="Service.Price" type="number" min="0" step="1" class="form-control" required />
+                                    <span asp-validation-for="Service.Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Service.DurationMinutes" class="form-label">Süre (Dakika)</label>
+                                    <input asp-for="Service.DurationMinutes" type="number" min="5" step="5" class="form-control" required />
+                                    <span asp-validation-for="Service.DurationMinutes" class="text-danger"></span>
+                                    <small class="form-text text-muted">Hizmetin yaklaşık süresini dakika cinsinden girin.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Service.Description" class="form-label">Açıklama</label>
+                            <textarea asp-for="Service.Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Service.Description" class="text-danger"></span>
+                            <small class="form-text text-muted">Hizmet hakkında kısa bir açıklama girin.</small>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input asp-for="Service.IsActive" class="form-check-input" />
+                            <label asp-for="Service.IsActive" class="form-check-label">Aktif</label>
+                            <span asp-validation-for="Service.IsActive" class="text-danger"></span>
+                            <small class="form-text text-muted d-block">İşaretlenirse, hizmet web sitesinde görüntülenir ve randevu alınabilir.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="h5 mb-0">SEO Ayarları</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="Service.UrlSlug" class="form-label">URL Slug</label>
+                                    <input asp-for="Service.UrlSlug" id="urlSlug" class="form-control" />
+                                    <span asp-validation-for="Service.UrlSlug" class="text-danger"></span>
+                                    <small class="form-text text-muted">URL'de görünecek kısa ad. Boş bırakırsanız otomatik oluşturulur.</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="Service.SeoKeywords" class="form-label">SEO Anahtar Kelimeleri</label>
+                                    <input asp-for="Service.SeoKeywords" class="form-control" />
+                                    <span asp-validation-for="Service.SeoKeywords" class="text-danger"></span>
+                                    <small class="form-text text-muted">Virgülle ayrılmış anahtar kelimeler.</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="Service.SeoDescription" class="form-label">SEO Açıklaması</label>
+                                    <textarea asp-for="Service.SeoDescription" class="form-control" rows="3"></textarea>
+                                    <span asp-validation-for="Service.SeoDescription" class="text-danger"></span>
+                                    <small class="form-text text-muted">Google arama sonuçlarında görünecek açıklama.</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mt-4">
+                            <div class="card-header bg-info text-white">
+                                <h3 class="h5 mb-0">Hizmet Önizleme</h3>
+                            </div>
+                            <div class="card-body">
+                                <p>
+                                    <a href="@Url.Action("Details", "Services", new { slug = Model.Service.UrlSlug })" target="_blank" class="btn btn-sm btn-outline-info w-100">
+                                        <i class="fas fa-external-link-alt me-2"></i> Hizmeti Görüntüle
+                                    </a>
+                                </p>
+                                <small class="text-muted">Not: Değişiklikler kaydedildikten sonra görünür olacaktır.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="@Url.Action("Services", "Admin")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i> İptal
+                    </a>
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i> Değişiklikleri Kaydet
+                        </button>
+                        <a href="@Url.Action("ServiceDelete", "Admin", new { id = Model.Service.Id })" 
+                           onclick="return confirm('Bu hizmeti silmek istediğinizden emin misiniz?');"
+                           class="btn btn-outline-danger ms-2">
+                            <i class="fas fa-trash me-2"></i> Hizmeti Sil
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Initialize slug generator only if slug is empty
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.querySelector('.slug-source');
+            const slugInput = document.querySelector(nameInput.dataset.slugTarget);
+            
+            if (nameInput && slugInput) {
+                // Only set up auto-generation if slug is empty
+                if (slugInput.value === '') {
+                    slugInput.dataset.autoGenerated = 'true';
+                    
+                    nameInput.addEventListener('input', function() {
+                        if (slugInput.value === '' || slugInput.dataset.autoGenerated === 'true') {
+                            slugInput.value = generateSlug(this.value);
+                            slugInput.dataset.autoGenerated = 'true';
+                        }
+                    });
+                }
+                
+                slugInput.addEventListener('input', function() {
+                    this.dataset.autoGenerated = 'false';
+                });
+            }
+            
+            function generateSlug(text) {
+                return text
+                    .toString()
+                    .toLowerCase()
+                    .trim()
+                    .replace(/ı/g, 'i')
+                    .replace(/ğ/g, 'g')
+                    .replace(/ü/g, 'u')
+                    .replace(/ş/g, 's')
+                    .replace(/ö/g, 'o')
+                    .replace(/ç/g, 'c')
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            }
+        });
+    </script>
+}

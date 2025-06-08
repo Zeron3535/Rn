@@ -1,0 +1,202 @@
+@model AppointmentsViewModel
+@{
+    ViewData["Title"] = "Randevu Yönetimi";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Randevu Yönetimi</h1>
+        <div>
+            <a href="@Url.Action("Index", "Appointments")" target="_blank" class="btn btn-outline-primary me-2">
+                <i class="fas fa-external-link-alt me-2"></i> Randevu Sayfası
+            </a>
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Tarih Seçimi</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <form method="get" action="@Url.Action("Appointments", "Admin")" class="d-flex">
+                        <input type="date" name="date" id="appointmentDate" class="form-control datepicker" value="@Model.Date.ToString("yyyy-MM-dd")" />
+                        <button type="submit" class="btn btn-primary ms-2">
+                            <i class="fas fa-search me-2"></i> Göster
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="btn-group">
+                        <a href="@Url.Action("Appointments", "Admin", new { date = Model.Date.AddDays(-1).ToString("yyyy-MM-dd") })" class="btn btn-outline-secondary">
+                            <i class="fas fa-chevron-left"></i> Önceki Gün
+                        </a>
+                        <a href="@Url.Action("Appointments", "Admin", new { date = DateTime.Today.ToString("yyyy-MM-dd") })" class="btn btn-outline-secondary">
+                            Bugün
+                        </a>
+                        <a href="@Url.Action("Appointments", "Admin", new { date = Model.Date.AddDays(1).ToString("yyyy-MM-dd") })" class="btn btn-outline-secondary">
+                            Sonraki Gün <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="h5 mb-0">@Model.Date.ToString("dd MMMM yyyy, dddd") Tarihli Randevular</h2>
+            <span class="badge bg-primary">Toplam: @Model.Appointments.Count randevu</span>
+        </div>
+        <div class="card-body">
+            @if (Model.Appointments.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Müşteri</th>
+                                <th>Saat</th>
+                                <th>Hizmetler</th>
+                                <th>Toplam Ücret</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appointment in Model.Appointments.OrderBy(a => a.StartTime))
+                            {
+                                <tr>
+                                    <td>@appointment.Id</td>
+                                    <td>
+                                        <strong>@appointment.CustomerName</strong><br />
+                                        <small class="text-muted">@appointment.PhoneNumber</small>
+                                    </td>
+                                    <td>@appointment.StartTime.ToString(@"hh\:mm") - @appointment.EndTime.ToString(@"hh\:mm")</td>
+                                    <td>
+                                        @if (appointment.AppointmentServices.Any())
+                                        {
+                                            <ul class="list-unstyled mb-0">
+                                                @foreach (var service in appointment.AppointmentServices.Take(2))
+                                                {
+                                                    <li>@service.Service?.Name</li>
+                                                }
+                                                @if (appointment.AppointmentServices.Count > 2)
+                                                {
+                                                    <li><small class="text-muted">+@(appointment.AppointmentServices.Count - 2) daha...</small></li>
+                                                }
+                                            </ul>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Hizmet seçilmemiş</span>
+                                        }
+                                    </td>
+                                    <td>@appointment.GetTotalPrice().ToString("C0")</td>
+                                    <td>
+                                        @switch (appointment.Status)
+                                        {
+                                            case AppointmentStatus.Pending:
+                                                <span class="badge bg-warning">Bekliyor</span>
+                                                break;
+                                            case AppointmentStatus.Confirmed:
+                                                <span class="badge bg-success">Onaylandı</span>
+                                                break;
+                                            case AppointmentStatus.Completed:
+                                                <span class="badge bg-info">Tamamlandı</span>
+                                                break;
+                                            case AppointmentStatus.Cancelled:
+                                                <span class="badge bg-danger">İptal Edildi</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="admin-action-buttons">
+                                            <a href="@Url.Action("AppointmentDetails", "Admin", new { id = appointment.Id })" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <form asp-action="AppointmentDelete" asp-route-id="@appointment.Id" method="post" class="d-inline" onsubmit="return confirm('Bu randevuyu silmek istediğinizden emin misiniz?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> Seçilen tarihte randevu bulunmamaktadır.
+                </div>
+            }
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Randevu Durumları</h2>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><span class="badge bg-warning me-2">Bekliyor</span> Henüz onaylanmamış randevular</span>
+                            <span class="badge bg-secondary rounded-pill">@Model.Appointments.Count(a => a.Status == AppointmentStatus.Pending)</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><span class="badge bg-success me-2">Onaylandı</span> Onaylanmış ve bekleyen randevular</span>
+                            <span class="badge bg-secondary rounded-pill">@Model.Appointments.Count(a => a.Status == AppointmentStatus.Confirmed)</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><span class="badge bg-info me-2">Tamamlandı</span> Tamamlanmış randevular</span>
+                            <span class="badge bg-secondary rounded-pill">@Model.Appointments.Count(a => a.Status == AppointmentStatus.Completed)</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><span class="badge bg-danger me-2">İptal Edildi</span> İptal edilmiş randevular</span>
+                            <span class="badge bg-secondary rounded-pill">@Model.Appointments.Count(a => a.Status == AppointmentStatus.Cancelled)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Randevu Yönetimi Hakkında</h2>
+                </div>
+                <div class="card-body">
+                    <p>Bu sayfada salon randevularını yönetebilirsiniz. Randevuları görüntüleyebilir, detaylarını inceleyebilir veya silebilirsiniz.</p>
+                    <p>Randevuları tarih bazında filtreleyebilirsiniz. Önceki gün, bugün veya sonraki gün butonlarını kullanarak hızlıca tarih değiştirebilirsiniz.</p>
+                    <p>Randevu detaylarını görüntülemek için randevunun yanındaki göz ikonuna tıklayın.</p>
+                    
+                    <div class="alert alert-warning mt-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i> <strong>Uyarı:</strong> Randevuyu sildiğinizde, bu işlem geri alınamaz ve müşteriye otomatik bildirim gönderilmez.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize date picker
+            const datePicker = document.getElementById('appointmentDate');
+            if (datePicker) {
+                datePicker.addEventListener('change', function() {
+                    this.form.submit();
+                });
+            }
+        });
+    </script>
+}

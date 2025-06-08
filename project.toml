@@ -1,0 +1,11 @@
+[build]
+builder = "paketobuildpacks/builder:base"
+buildpacks = ["paketo-buildpacks/dotnet-core"]
+
+[build.env]
+BP_DOTNET_FRAMEWORK_VERSION = "6.0.0"
+BP_DOTNET_SDK_VERSION = "6.0.x"
+BP_DOTNET_PUBLISH_FLAGS = "--configuration Release"
+
+[run]
+command = "dotnet ./bin/Release/net6.0/publish/TinaKuafor.dll"

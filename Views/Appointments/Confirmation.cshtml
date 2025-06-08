@@ -1,0 +1,123 @@
+@model Appointment
+@{
+    ViewData["Title"] = "Randevu Onayı";
+    ViewData["MetaDescription"] = "Tina Kuaför randevu onayı. Randevu detaylarınızı görüntüleyin ve kaydedin.";
+    ViewData["MetaKeywords"] = "İzmir Kuaför Randevu, Tina Kuaför Randevu Onayı";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">
+                    <h1 class="h3 mb-0"><i class="fas fa-check-circle me-2"></i> Randevunuz Başarıyla Oluşturuldu</h1>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success">
+                        <p class="mb-0">
+                            <strong>@Model.CustomerName</strong>, randevunuz başarıyla oluşturuldu. 
+                            Randevu detaylarınız aşağıda yer almaktadır. Bu bilgileri kaydetmenizi öneririz.
+                        </p>
+                    </div>
+
+                    <h2 class="h4 mb-3 border-bottom pb-2">Randevu Detayları</h2>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i> Müşteri:</strong> @Model.CustomerName</p>
+                            <p><strong><i class="fas fa-phone me-2"></i> Telefon:</strong> @Model.PhoneNumber</p>
+                            @if (!string.IsNullOrEmpty(Model.Notes))
+                            {
+                                <p><strong><i class="fas fa-sticky-note me-2"></i> Notlar:</strong> @Model.Notes</p>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-calendar-day me-2"></i> Tarih:</strong> @Model.AppointmentDate.ToString("dd.MM.yyyy")</p>
+                            <p><strong><i class="fas fa-clock me-2"></i> Saat:</strong> @Model.StartTime.ToString(@"hh\:mm") - @Model.EndTime.ToString(@"hh\:mm")</p>
+                            <p><strong><i class="fas fa-money-bill-wave me-2"></i> Toplam Ücret:</strong> ₺@Model.GetTotalPrice().ToString("N0")</p>
+                        </div>
+                    </div>
+
+                    <h3 class="h5 mb-3">Seçilen Hizmetler</h3>
+                    <ul class="list-group mb-4">
+                        @foreach (var appointmentService in Model.AppointmentServices)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @appointmentService.Service?.Name
+                                <span class="badge bg-primary rounded-pill">₺@(appointmentService.Service?.Price.ToString("N0"))</span>
+                            </li>
+                        }
+                    </ul>
+
+                    <div class="alert alert-info">
+                        <p class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i> Randevunuz otomatik olarak onaylanmıştır. 
+                            Herhangi bir değişiklik veya iptal için lütfen bana ulaşın.
+                        </p>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                            <i class="fas fa-home me-2"></i> Ana Sayfaya Dön
+                        </a>
+                        <a href="https://wa.me/905375890642?text=Merhaba, @Model.AppointmentDate.ToString("dd.MM.yyyy") tarihinde saat @Model.StartTime.ToString(@"hh\:mm") için randevu aldım. Randevu ID: @Model.Id" 
+                           target="_blank" class="btn btn-success">
+                            <i class="fab fa-whatsapp me-2"></i> WhatsApp ile İletişim
+                        </a>
+                        <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                            <i class="fas fa-print me-2"></i> Yazdır
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Salon Bilgileri</h2>
+                    <p><i class="fas fa-map-marker-alt text-primary me-2"></i> <strong>Adres:</strong> Onur, Salkım Sk. 9/A, 35330 Balçova/İzmir</p>
+                    <p><i class="fas fa-phone text-primary me-2"></i> <strong>Telefon:</strong> 0537 589 06 42</p>
+                    <p><i class="fas fa-clock text-primary me-2"></i> <strong>Çalışma Saatleri:</strong></p>
+                    <ul>
+                        <li>Pazartesi: Kapalı</li>
+                        <li>Salı - Pazar: 10:00 - 21:00</li>
+                    </ul>
+
+                    <div class="mt-3">
+                        <a href="https://maps.google.com/?q=Onur, Salkım Sk. 9/A, 35330 Balçova/İzmir" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-map-marked-alt me-2"></i> Yol Tarifi Al
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        @@media print {
+            .navbar, .footer, .btn, .no-print {
+                display: none !important;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+            }
+            .card-header {
+                background-color: #fff !important;
+                color: #000 !important;
+                border-bottom: 1px solid #ddd !important;
+            }
+            .alert {
+                border: 1px solid #ddd !important;
+                background-color: #fff !important;
+                color: #000 !important;
+            }
+            .badge {
+                border: 1px solid #ddd !important;
+                background-color: #fff !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+}

@@ -1,0 +1,137 @@
+@model ServiceCategory
+@{
+    ViewData["Title"] = "Yeni Kategori Ekle";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Yeni Kategori Ekle</h1>
+        <a href="@Url.Action("Categories", "Admin")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Kategorilere Dön
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="CategoryCreate" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Kategori Adı</label>
+                            <input asp-for="Name" class="form-control slug-source" data-slug-target="#urlSlug" required />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                            <small class="form-text text-muted">Kategorinin tam adını girin. Örn: "Saç Hizmetleri"</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Açıklama</label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <small class="form-text text-muted">Kategori hakkında kısa bir açıklama girin.</small>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="DisplayOrder" class="form-label">Görüntüleme Sırası</label>
+                                    <input asp-for="DisplayOrder" type="number" min="0" step="10" class="form-control" />
+                                    <span asp-validation-for="DisplayOrder" class="text-danger"></span>
+                                    <small class="form-text text-muted">Kategorinin görüntülenme sırasını belirler. Düşük değerli kategoriler daha önce görüntülenir.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 form-check mt-4">
+                                    <input asp-for="IsActive" class="form-check-input" />
+                                    <label asp-for="IsActive" class="form-check-label">Aktif</label>
+                                    <span asp-validation-for="IsActive" class="text-danger"></span>
+                                    <small class="form-text text-muted d-block">İşaretlenirse, kategori web sitesinde görüntülenir.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="h5 mb-0">SEO Ayarları</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label asp-for="UrlSlug" class="form-label">URL Slug</label>
+                                    <input asp-for="UrlSlug" id="urlSlug" class="form-control" />
+                                    <span asp-validation-for="UrlSlug" class="text-danger"></span>
+                                    <small class="form-text text-muted">URL'de görünecek kısa ad. Boş bırakırsanız otomatik oluşturulur.</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="SeoKeywords" class="form-label">SEO Anahtar Kelimeleri</label>
+                                    <input asp-for="SeoKeywords" class="form-control" />
+                                    <span asp-validation-for="SeoKeywords" class="text-danger"></span>
+                                    <small class="form-text text-muted">Virgülle ayrılmış anahtar kelimeler.</small>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="SeoDescription" class="form-label">SEO Açıklaması</label>
+                                    <textarea asp-for="SeoDescription" class="form-control" rows="3"></textarea>
+                                    <span asp-validation-for="SeoDescription" class="text-danger"></span>
+                                    <small class="form-text text-muted">Google arama sonuçlarında görünecek açıklama.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 d-flex justify-content-between">
+                    <a href="@Url.Action("Categories", "Admin")" class="btn btn-outline-secondary">
+                        <i class="fas fa-times me-2"></i> İptal
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i> Kategoriyi Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Initialize slug generator
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.querySelector('.slug-source');
+            const slugInput = document.querySelector(nameInput.dataset.slugTarget);
+            
+            if (nameInput && slugInput) {
+                nameInput.addEventListener('input', function() {
+                    if (slugInput.value === '' || slugInput.dataset.autoGenerated === 'true') {
+                        slugInput.value = generateSlug(this.value);
+                        slugInput.dataset.autoGenerated = 'true';
+                    }
+                });
+                
+                slugInput.addEventListener('input', function() {
+                    this.dataset.autoGenerated = 'false';
+                });
+            }
+            
+            function generateSlug(text) {
+                return text
+                    .toString()
+                    .toLowerCase()
+                    .trim()
+                    .replace(/ı/g, 'i')
+                    .replace(/ğ/g, 'g')
+                    .replace(/ü/g, 'u')
+                    .replace(/ş/g, 's')
+                    .replace(/ö/g, 'o')
+                    .replace(/ç/g, 'c')
+                    .replace(/[^\w\s-]/g, '')
+                    .replace(/[\s_-]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
+            }
+        });
+    </script>
+}

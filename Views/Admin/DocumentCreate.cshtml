@@ -1,0 +1,109 @@
+@model BusinessDocument
+@{
+    ViewData["Title"] = "Yeni Belge/Not";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">📄 Yeni Belge/Not</h1>
+        <a href="@Url.Action("Documents")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Geri Dön
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="DocumentCreate" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Başlık</label>
+                            <input asp-for="Title" class="form-control" placeholder="Belge/not başlığı..." required>
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label">İçerik</label>
+                            <textarea asp-for="Content" class="form-control" rows="5" placeholder="Belge/not içeriği..." required></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Category" class="form-label">Kategori (İsteğe Bağlı)</label>
+                                <input asp-for="Category" class="form-control" placeholder="Örn: Önemli, Hatırlatma..." list="categoryList">
+                                <datalist id="categoryList">
+                                    <option value="Önemli"></option>
+                                    <option value="Hatırlatma"></option>
+                                    <option value="Görev"></option>
+                                    <option value="Toplantı"></option>
+                                    <option value="Müşteri"></option>
+                                    <option value="Finansal"></option>
+                                    <option value="Yasal"></option>
+                                    <option value="Diğer"></option>
+                                </datalist>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Priority" class="form-label">Öncelik</label>
+                                <select asp-for="Priority" class="form-select">
+                                    <option value="Düşük">Düşük</option>
+                                    <option value="Normal" selected>Normal</option>
+                                    <option value="Yüksek">Yüksek</option>
+                                </select>
+                                <span asp-validation-for="Priority" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DueDate" class="form-label">Son Tarih (İsteğe Bağlı)</label>
+                            <input asp-for="DueDate" type="date" class="form-control">
+                            <span asp-validation-for="DueDate" class="text-danger"></span>
+                            <small class="form-text text-muted">Bu belge/not için bir son tarih belirleyebilirsiniz.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Ek Notlar (İsteğe Bağlı)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Ek notlar..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("Documents")" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-times me-2"></i> İptal
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const prioritySelect = document.querySelector('[name="Priority"]');
+            
+            prioritySelect.addEventListener('change', function() {
+                const card = document.querySelector('.card');
+                card.classList.remove('border-danger', 'border-warning', 'border-secondary');
+                
+                if (this.value === 'Yüksek') {
+                    card.classList.add('border-danger');
+                } else if (this.value === 'Normal') {
+                    card.classList.add('border-warning');
+                } else {
+                    card.classList.add('border-secondary');
+                }
+            });
+        });
+    </script>
+} 

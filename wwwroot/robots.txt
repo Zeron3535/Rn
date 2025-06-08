@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /Admin/
+Disallow: /Error/
+
+Sitemap: https://tinakuafor.com/sitemap.xml 

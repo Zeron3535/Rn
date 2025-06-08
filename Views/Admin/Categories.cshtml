@@ -1,0 +1,120 @@
+@model List<ServiceCategory>
+@{
+    ViewData["Title"] = "Kategori Yönetimi";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Kategori Yönetimi</h1>
+        <a href="@Url.Action("CategoryCreate", "Admin")" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i> Yeni Kategori Ekle
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Kategori Adı</th>
+                                <th>URL Slug</th>
+                                <th>Sıralama</th>
+                                <th>Hizmet Sayısı</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in Model)
+                            {
+                                <tr>
+                                    <td>@category.Id</td>
+                                    <td><strong>@category.Name</strong></td>
+                                    <td>/@category.UrlSlug</td>
+                                    <td>@category.DisplayOrder</td>
+                                    <td>@category.Services.Count</td>
+                                    <td>
+                                        @if (category.IsActive)
+                                        {
+                                            <span class="badge bg-success">Aktif</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Pasif</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="admin-action-buttons">
+                                            <a href="@Url.Action("CategoryEdit", "Admin", new { id = category.Id })" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="@Url.Action("Category", "Services", new { slug = category.UrlSlug })" target="_blank" class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <form asp-action="CategoryDelete" asp-route-id="@category.Id" method="post" class="d-inline" onsubmit="return confirm('Bu kategoriyi silmek istediğinizden emin misiniz? Kategoriye ait hizmetler varsa silinemez.');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> Henüz kategori bulunmamaktadır. Yeni bir kategori eklemek için "Yeni Kategori Ekle" butonuna tıklayın.
+                </div>
+            }
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Kategori Yönetimi Hakkında</h2>
+                </div>
+                <div class="card-body">
+                    <p>Bu sayfada salon hizmet kategorilerinizi yönetebilirsiniz. Yeni kategori ekleyebilir, mevcut kategorileri düzenleyebilir veya silebilirsiniz.</p>
+                    <p>Kategorilerin görünürlüğünü "Aktif" veya "Pasif" olarak ayarlayabilirsiniz. Pasif kategoriler web sitesinde görüntülenmez.</p>
+                    <p>Kategorilerin sıralama numarasını değiştirerek web sitesindeki görünüm sırasını belirleyebilirsiniz.</p>
+                    <p><strong>Not:</strong> İçinde hizmet bulunan kategoriler silinemez. Önce kategorideki tüm hizmetleri silmeli veya başka bir kategoriye taşımalısınız.</p>
+                    
+                    <div class="mt-3">
+                        <a href="@Url.Action("Services", "Admin")" class="btn btn-outline-primary">
+                            <i class="fas fa-cut me-2"></i> Hizmetleri Yönet
+                        </a>
+                        <a href="@Url.Action("Index", "Services")" target="_blank" class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-external-link-alt me-2"></i> Hizmetler Sayfasını Görüntüle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Kategori Sıralaması</h2>
+                </div>
+                <div class="card-body">
+                    <p>Kategorilerin görünüm sırası "Sıralama" değerine göre belirlenir. Düşük değerli kategoriler daha önce görüntülenir.</p>
+                    <p>Sıralama değerini değiştirmek için kategoriyi düzenleyin ve "Görüntüleme Sırası" alanını güncelleyin.</p>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-lightbulb me-2"></i> <strong>İpucu:</strong> Kategorileri 10'ar artışlarla sıralayabilirsiniz (10, 20, 30...) böylece ileride araya yeni kategoriler eklemek isterseniz kolayca sıralama yapabilirsiniz.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

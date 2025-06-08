@@ -1,0 +1,8 @@
+build:
+  command: |
+    dotnet restore
+    dotnet publish -c Release
+
+run:
+  command: dotnet ./bin/Release/net6.0/publish/TinaKuafor.dll
+  port: 8080

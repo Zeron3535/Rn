@@ -1,0 +1,23 @@
+name: tinakuafor
+service:
+  name: web
+  instance_type: nano
+  ports:
+    - port: 8080
+      protocol: http
+  build:
+    buildpacks:
+      - paketo-buildpacks/dotnet-core
+    builder: paketobuildpacks/builder:base
+    env:
+      BP_DOTNET_FRAMEWORK_VERSION: "6.0.0"
+      BP_DOTNET_SDK_VERSION: "6.0.x"
+      BP_DOTNET_PUBLISH_FLAGS: "--configuration Release"
+  env:
+    - name: ASPNETCORE_URLS
+      value: http://+:8080
+    - name: PORT
+      value: "8080"
+  routes:
+    - path: /
+      port: 8080

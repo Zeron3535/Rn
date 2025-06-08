@@ -1,0 +1,149 @@
+@model FinancialRecordsViewModel
+@{
+    ViewData["Title"] = "Gelir/Gider Yönetimi";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">💰 Gelir/Gider Yönetimi</h1>
+        <a href="@Url.Action("FinancialRecordCreate")" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Yeni Kayıt Ekle
+        </a>
+    </div>
+
+    <!-- Filtreler -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Başlangıç Tarihi</label>
+                    <input type="date" name="startDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Bitiş Tarihi</label>
+                    <input type="date" name="endDate" class="form-control" value="@Model.EndDate.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-outline-primary">
+                        <i class="fas fa-filter me-2"></i> Filtrele
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Özet Kartları -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Toplam Gelir</h5>
+                    <h3 class="mb-0">₺@Model.TotalIncome.ToString("N0")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Toplam Gider</h5>
+                    <h3 class="mb-0">₺@Model.TotalExpense.ToString("N0")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card @(Model.NetProfit >= 0 ? "bg-info" : "bg-warning") text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Net Kar/Zarar</h5>
+                    <h3 class="mb-0">₺@Model.NetProfit.ToString("N0")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Toplam Kayıt</h5>
+                    <h3 class="mb-0">@Model.Records.Count</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kayıtlar Tablosu -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Finansal Kayıtlar</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Records.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tarih</th>
+                                <th>Açıklama</th>
+                                <th>Kategori</th>
+                                <th>Tür</th>
+                                <th>Tutar</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var record in Model.Records)
+                            {
+                                <tr>
+                                    <td>@record.Date.ToString("dd.MM.yyyy")</td>
+                                    <td>
+                                        @record.Description
+                                        @if (record.Appointment != null)
+                                        {
+                                            <br><small class="text-muted">Randevu: @record.Appointment.CustomerName</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(record.Category))
+                                        {
+                                            <span class="badge bg-secondary">@record.Category</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (record.Type == FinancialRecordType.Income)
+                                        {
+                                            <span class="badge bg-success">Gelir</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Gider</span>
+                                        }
+                                    </td>
+                                    <td class="fw-bold @(record.Type == FinancialRecordType.Income ? "text-success" : "text-danger")">
+                                        @(record.Type == FinancialRecordType.Income ? "+" : "-")₺@record.Amount.ToString("N0")
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="@Url.Action("FinancialRecordEdit", new { id = record.Id })" class="btn btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form asp-action="FinancialRecordDelete" asp-route-id="@record.Id" method="post" class="d-inline" onsubmit="return confirm('Bu kaydı silmek istediğinizden emin misiniz?');">
+                                                <button type="submit" class="btn btn-outline-danger">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Seçilen tarih aralığında finansal kayıt bulunmamaktadır.
+                </div>
+            }
+        </div>
+    </div>
+</div> 

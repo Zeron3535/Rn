@@ -1,0 +1,386 @@
+@model List<BusinessHours>
+@{
+    ViewData["Title"] = "Çalışma Saatleri";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2">Çalışma Saatleri</h1>
+        <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Panele Dön
+        </a>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h2 class="h5 mb-0">Haftalık Çalışma Saatleri</h2>
+        </div>
+        <div class="card-body">
+            <p class="mb-4">
+                Salonunuzun çalışma saatlerini aşağıdan düzenleyebilirsiniz. Kapalı günler için "Açık" seçeneğini işaretlemeyin.
+                Çalışma saatleri, randevu sisteminde müşterilerin randevu alabileceği saatleri belirler.
+            </p>
+            
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Gün</th>
+                            <th>Durum</th>
+                            <th>Açılış Saati</th>
+                            <th>Kapanış Saati</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var day in Model.OrderBy(d => GetDayOrder(d.DayOfWeek)))
+                        {
+                            <tr>
+                                <td>
+                                    <strong>@GetDayName(day.DayOfWeek)</strong>
+                                </td>
+                                <td>
+                                    @if (day.IsOpen)
+                                    {
+                                        <span class="badge bg-success">Açık</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Kapalı</span>
+                                    }
+                                </td>
+                                <td>@(day.IsOpen ? day.OpenTime : "-")</td>
+                                <td>@(day.IsOpen ? day.CloseTime : "-")</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-primary edit-hours-btn" 
+                                            data-id="@day.Id" 
+                                            data-day="@day.DayOfWeek" 
+                                            data-is-open="@day.IsOpen.ToString().ToLower()" 
+                                            data-open-time="@day.OpenTime" 
+                                            data-close-time="@day.CloseTime"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editHoursModal">
+                                        <i class="fas fa-edit"></i> Düzenle
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Çalışma Saatleri Hakkında</h2>
+                </div>
+                <div class="card-body">
+                    <p>Çalışma saatleri, randevu sisteminde müşterilerin randevu alabileceği saatleri belirler.</p>
+                    <p>Kapalı günlerde randevu alınamaz ve bu günler randevu takviminde devre dışı bırakılır.</p>
+                    <p>Açık günlerde, belirtilen açılış ve kapanış saatleri arasında randevu alınabilir.</p>
+                    <p>Çalışma saatlerini değiştirdiğinizde, değişiklikler anında randevu sistemine yansır.</p>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i> <strong>Bilgi:</strong> Saat formatı 24 saat formatında olmalıdır (örn: 09:00, 21:00).
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="h5 mb-0">Randevu Sistemi Entegrasyonu</h2>
+                </div>
+                <div class="card-body">
+                    <p>Çalışma saatleri, randevu sisteminde aşağıdaki şekilde kullanılır:</p>
+                    <ul>
+                        <li>Kapalı günlerde randevu alınamaz ve bu günler takvimde devre dışı bırakılır.</li>
+                        <li>Açık günlerde, belirtilen açılış ve kapanış saatleri arasında randevu alınabilir.</li>
+                        <li>Randevu süreleri, seçilen hizmetlerin toplam süresine göre hesaplanır.</li>
+                        <li>Kapanış saatinden önce tamamlanamayacak randevular için zaman dilimi sunulmaz.</li>
+                    </ul>
+                    
+                    <div class="mt-3">
+                        <a href="@Url.Action("Index", "Appointments")" target="_blank" class="btn btn-outline-primary">
+                            <i class="fas fa-external-link-alt me-2"></i> Randevu Sayfasını Görüntüle
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Hours Modal -->
+<div class="modal fade" id="editHoursModal" tabindex="-1" aria-labelledby="editHoursModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form asp-action="BusinessHoursEdit" method="post" id="editHoursForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editHoursModalLabel">Çalışma Saatlerini Düzenle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editId" name="Id" />
+                    <input type="hidden" id="editDayOfWeek" name="DayOfWeek" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Gün</label>
+                        <input type="text" class="form-control" id="editDayName" readonly />
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input is-open-checkbox" id="editIsOpen" name="IsOpen" />
+                        <label class="form-check-label" for="editIsOpen">Açık</label>
+                        <small class="form-text text-muted d-block">İşaretlenirse, bu gün için randevu alınabilir.</small>
+                    </div>
+                    
+                    <div class="row time-inputs">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editOpenTime" class="form-label">Açılış Saati</label>
+                                <input type="time" class="form-control time-input" id="editOpenTime" name="OpenTime" min="00:00" max="23:59" />
+                                <small class="form-text text-muted">Örn: 10:00</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="editCloseTime" class="form-label">Kapanış Saati</label>
+                                <input type="time" class="form-control time-input" id="editCloseTime" name="CloseTime" min="00:00" max="23:59" />
+                                <small class="form-text text-muted">Örn: 21:00</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="formErrorMessage" class="alert alert-danger d-none">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <span id="errorMessageText"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('BusinessHours script loaded');
+            
+            // Edit hours button click
+            const editButtons = document.querySelectorAll('.edit-hours-btn');
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Hide any previous error message
+                    const errorMsg = document.getElementById('formErrorMessage');
+                    errorMsg.classList.add('d-none');
+
+                    // Get data attributes
+                    const id = this.getAttribute('data-id');
+                    const day = this.getAttribute('data-day');
+                    const isOpen = this.getAttribute('data-is-open') === 'true';
+                    const openTime = this.getAttribute('data-open-time');
+                    const closeTime = this.getAttribute('data-close-time');
+                    
+                    console.log(`Edit button clicked: ID=${id}, Day=${day}, IsOpen=${isOpen}, Open=${openTime}, Close=${closeTime}`);
+                    
+                    // Set values in form
+                    document.getElementById('editId').value = id;
+                    document.getElementById('editDayOfWeek').value = day;
+                    document.getElementById('editDayName').value = getDayName(day);
+                    document.getElementById('editIsOpen').checked = isOpen;
+                    
+                    // Convert openTime and closeTime to proper HTML time input format (HH:MM)
+                    const formattedOpenTime = formatTimeForInput(openTime);
+                    const formattedCloseTime = formatTimeForInput(closeTime);
+                    
+                    console.log(`Formatted times: Open=${formattedOpenTime}, Close=${formattedCloseTime}`);
+                    
+                    document.getElementById('editOpenTime').value = formattedOpenTime;
+                    document.getElementById('editCloseTime').value = formattedCloseTime;
+                    
+                    // Enable/disable time inputs based on isOpen
+                    toggleTimeInputs(isOpen);
+                });
+            });
+            
+            // IsOpen checkbox change
+            const isOpenCheckbox = document.querySelector('.is-open-checkbox');
+            if (isOpenCheckbox) {
+                isOpenCheckbox.addEventListener('change', function() {
+                    toggleTimeInputs(this.checked);
+                });
+            }
+            
+            // Form submission validation
+            const editHoursForm = document.getElementById('editHoursForm');
+            if (editHoursForm) {
+                editHoursForm.addEventListener('submit', function(event) {
+                    const isOpen = document.getElementById('editIsOpen').checked;
+                    const errorMsg = document.getElementById('formErrorMessage');
+                    const errorText = document.getElementById('errorMessageText');
+                    
+                    errorMsg.classList.add('d-none');
+                    
+                    if (isOpen) {
+                        const openTime = document.getElementById('editOpenTime').value;
+                        const closeTime = document.getElementById('editCloseTime').value;
+                        
+                        if (!openTime || !closeTime) {
+                            event.preventDefault();
+                            errorText.textContent = 'Açılış ve kapanış saatlerini belirtmelisiniz.';
+                            errorMsg.classList.remove('d-none');
+                            return false;
+                        }
+                        
+                        if (openTime >= closeTime) {
+                            event.preventDefault();
+                            errorText.textContent = 'Açılış saati kapanış saatinden önce olmalıdır.';
+                            errorMsg.classList.remove('d-none');
+                            return false;
+                        }
+
+                        // Ensure time inputs are properly formatted
+                        document.getElementById('editOpenTime').value = formatTimeForInput(openTime);
+                        document.getElementById('editCloseTime').value = formatTimeForInput(closeTime);
+                    } else {
+                        // If closed, set default values for the form submission
+                        document.getElementById('editOpenTime').value = '09:00';
+                        document.getElementById('editCloseTime').value = '18:00';
+                    }
+                    
+                    // Log the form data before submission
+                    const formData = new FormData(editHoursForm);
+                    console.log('Submitting form with values:');
+                    for (let [key, value] of formData.entries()) {
+                        console.log(`${key}: ${value}`);
+                    }
+                    
+                    return true;
+                });
+            }
+            
+            // Toggle time inputs based on isOpen
+            function toggleTimeInputs(isOpen) {
+                console.log(`Toggling time inputs: isOpen=${isOpen}`);
+                const timeInputs = document.querySelectorAll('.time-input');
+                timeInputs.forEach(input => {
+                    input.disabled = !isOpen;
+                    if (!isOpen) {
+                        // Set default values when disabled
+                        if (input.id === 'editOpenTime') {
+                            input.value = '09:00';
+                        } else if (input.id === 'editCloseTime') {
+                            input.value = '18:00';
+                        }
+                    }
+                });
+            }
+            
+            // Format time for input (HH:MM)
+            function formatTimeForInput(timeString) {
+                if (!timeString) {
+                    console.log('Empty time string, returning default 09:00');
+                    return '09:00';
+                }
+                
+                console.log(`Formatting time: ${timeString}`);
+                
+                // If already in HH:MM format, return as is
+                if (/^\d{2}:\d{2}$/.test(timeString)) {
+                    console.log(`Time already in correct format: ${timeString}`);
+                    return timeString;
+                }
+                
+                try {
+                    // Try to parse the time string
+                    const timeParts = timeString.split(':');
+                    
+                    // Handle different formats
+                    if (timeParts.length >= 2) {
+                        const hours = timeParts[0].padStart(2, '0');
+                        const minutes = timeParts[1].padStart(2, '0');
+                        const formatted = `${hours}:${minutes}`;
+                        console.log(`Formatted time using parts: ${timeString} -> ${formatted}`);
+                        return formatted;
+                    }
+                    
+                    // Direct parsing for other formats
+                    if (/^\d{1,2}[:.]\d{1,2}$/.test(timeString)) {
+                        const digitsOnly = timeString.replace(/\D/g, '');
+                        let hours = parseInt(digitsOnly.substring(0, digitsOnly.length > 2 ? 2 : 1));
+                        let minutes = parseInt(digitsOnly.substring(digitsOnly.length > 2 ? 2 : 1));
+                        
+                        hours = Math.min(Math.max(hours, 0), 23);
+                        minutes = Math.min(Math.max(minutes, 0), 59);
+                        
+                        const formatted = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                        console.log(`Formatted time using regex parsing: ${timeString} -> ${formatted}`);
+                        return formatted;
+                    }
+                    
+                    // If all else fails, return default
+                    console.log(`Could not format time string: ${timeString}, returning default 09:00`);
+                    return '09:00';
+                } catch (e) {
+                    console.error('Error formatting time:', e);
+                    return '09:00';
+                }
+            }
+            
+            // Get day name
+            function getDayName(day) {
+                const days = {
+                    'Monday': 'Pazartesi',
+                    'Tuesday': 'Salı',
+                    'Wednesday': 'Çarşamba',
+                    'Thursday': 'Perşembe',
+                    'Friday': 'Cuma',
+                    'Saturday': 'Cumartesi',
+                    'Sunday': 'Pazar'
+                };
+                return days[day] || day;
+            }
+        });
+    </script>
+}
+
+@functions {
+    private int GetDayOrder(string day)
+    {
+        switch (day)
+        {
+            case "Monday": return 1;
+            case "Tuesday": return 2;
+            case "Wednesday": return 3;
+            case "Thursday": return 4;
+            case "Friday": return 5;
+            case "Saturday": return 6;
+            case "Sunday": return 7;
+            default: return 0;
+        }
+    }
+    
+    private string GetDayName(string day)
+    {
+        switch (day)
+        {
+            case "Monday": return "Pazartesi";
+            case "Tuesday": return "Salı";
+            case "Wednesday": return "Çarşamba";
+            case "Thursday": return "Perşembe";
+            case "Friday": return "Cuma";
+            case "Saturday": return "Cumartesi";
+            case "Sunday": return "Pazar";
+            default: return day;
+        }
+    }
+}

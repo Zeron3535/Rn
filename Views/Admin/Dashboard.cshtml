@@ -1,0 +1,269 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard - Yönetim Paneli";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">📊 Dashboard</h1>
+        <div class="text-muted">
+            <i class="fas fa-calendar-alt me-1"></i>
+            @DateTime.Now.ToString("dd MMMM yyyy, dddd")
+        </div>
+    </div>
+
+    <!-- Finansal Özet -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>
+                        @Model.CurrentMonth - Finansal Özet
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="dashboard-stat bg-success text-white">
+                                <div class="dashboard-stat-icon">
+                                    <i class="fas fa-arrow-up"></i>
+                                </div>
+                                <div class="dashboard-stat-number">₺@Model.MonthlyIncome.ToString("N0")</div>
+                                <div class="dashboard-stat-label">Toplam Gelir</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="dashboard-stat bg-danger text-white">
+                                <div class="dashboard-stat-icon">
+                                    <i class="fas fa-arrow-down"></i>
+                                </div>
+                                <div class="dashboard-stat-number">₺@Model.MonthlyExpense.ToString("N0")</div>
+                                <div class="dashboard-stat-label">Toplam Gider</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="dashboard-stat @(Model.MonthlyProfit >= 0 ? "bg-info" : "bg-warning") text-white">
+                                <div class="dashboard-stat-icon">
+                                    <i class="fas fa-@(Model.MonthlyProfit >= 0 ? "chart-line" : "exclamation-triangle")"></i>
+                                </div>
+                                <div class="dashboard-stat-number">₺@Model.MonthlyProfit.ToString("N0")</div>
+                                <div class="dashboard-stat-label">Net Kar/Zarar</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="dashboard-stat bg-primary text-white">
+                                <div class="dashboard-stat-icon">
+                                    <i class="fas fa-cut"></i>
+                                </div>
+                                <div class="dashboard-stat-number">₺@Model.AppointmentIncome.ToString("N0")</div>
+                                <div class="dashboard-stat-label">Randevu Geliri</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- İstatistik Kartları -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="dashboard-stat animate__animated animate__fadeInUp animate__delay-1s">
+                <div class="dashboard-stat-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="dashboard-stat-number">@Model.UpcomingAppointments.Count</div>
+                <div class="dashboard-stat-label">Yaklaşan Randevular</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="dashboard-stat animate__animated animate__fadeInUp animate__delay-2s">
+                <div class="dashboard-stat-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <div class="dashboard-stat-number">@Model.ServiceCount</div>
+                <div class="dashboard-stat-label">Aktif Hizmetler</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="dashboard-stat animate__animated animate__fadeInUp animate__delay-3s">
+                <div class="dashboard-stat-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="dashboard-stat-number">@Model.PendingDocuments</div>
+                <div class="dashboard-stat-label">Bekleyen Belgeler</div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="dashboard-stat animate__animated animate__fadeInUp animate__delay-4s @(Model.HighPriorityDocuments > 0 ? "bg-warning text-dark" : "")">
+                <div class="dashboard-stat-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="dashboard-stat-number">@Model.HighPriorityDocuments</div>
+                <div class="dashboard-stat-label">Acil Belgeler</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4 animate__animated animate__fadeInLeft animate__delay-4s">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="h5 mb-0">Yaklaşan Randevular</h2>
+                    <a href="@Url.Action("Appointments", "Admin")" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-calendar-alt me-1"></i> Tüm Randevular
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.UpcomingAppointments.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Müşteri</th>
+                                        <th>Tarih</th>
+                                        <th>Saat</th>
+                                        <th>Hizmetler</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model.UpcomingAppointments)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong>@appointment.CustomerName</strong><br />
+                                                <small class="text-muted">@appointment.PhoneNumber</small>
+                                            </td>
+                                            <td>@appointment.AppointmentDate.ToString("dd.MM.yyyy")</td>
+                                            <td>@appointment.StartTime.ToString(@"hh\:mm") - @appointment.EndTime.ToString(@"hh\:mm")</td>
+                                            <td>
+                                                @if (appointment.AppointmentServices.Any())
+                                                {
+                                                    <ul class="list-unstyled mb-0">
+                                                        @foreach (var service in appointment.AppointmentServices.Take(2))
+                                                        {
+                                                            <li>@service.Service?.Name</li>
+                                                        }
+                                                        @if (appointment.AppointmentServices.Count > 2)
+                                                        {
+                                                            <li><small class="text-muted">+@(appointment.AppointmentServices.Count - 2) daha...</small></li>
+                                                        }
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Hizmet seçilmemiş</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="admin-action-buttons">
+                                                    <a href="@Url.Action("AppointmentDetails", "Admin", new { id = appointment.Id })" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <form asp-action="AppointmentDelete" asp-route-id="@appointment.Id" method="post" class="d-inline" onsubmit="return confirm('Bu randevuyu silmek istediğinizden emin misiniz?');">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i> Yaklaşan randevu bulunmamaktadır.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4 animate__animated animate__fadeInRight animate__delay-4s">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-bolt me-2"></i>
+                        Hızlı İşlemler
+                    </h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="@Url.Action("FinancialRecordCreate", "Admin")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus-circle me-2 text-success"></i> Gelir/Gider Ekle
+                        </a>
+                        <a href="@Url.Action("DocumentCreate", "Admin")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-file-plus me-2 text-info"></i> Yeni Belge/Not Ekle
+                        </a>
+                        <a href="@Url.Action("ServiceCreate", "Admin")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-cut me-2 text-primary"></i> Yeni Hizmet Ekle
+                        </a>
+                        <a href="@Url.Action("BusinessHours", "Admin")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-clock me-2 text-warning"></i> Çalışma Saatleri
+                        </a>
+                        <a href="@Url.Action("Settings", "Admin")" class="list-group-item list-group-item-action">
+                            <i class="fas fa-cog me-2 text-secondary"></i> Site Ayarları
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Finansal Özet Kartı -->
+            <div class="card mb-4 animate__animated animate__fadeInRight animate__delay-5s">
+                <div class="card-header bg-gradient-success text-white">
+                    <h2 class="h5 mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        Finansal Yönetim
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("FinancialRecords", "Admin")" class="btn btn-outline-success">
+                            <i class="fas fa-chart-line me-2"></i> Gelir/Gider Raporu
+                        </a>
+                        <a href="@Url.Action("Documents", "Admin")" class="btn btn-outline-info">
+                            <i class="fas fa-folder-open me-2"></i> Belge Yönetimi
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.PendingTestimonialCount > 0)
+            {
+                <div class="card mb-4 animate__animated animate__fadeInRight animate__delay-6s">
+                    <div class="card-header bg-warning text-dark">
+                        <h2 class="h5 mb-0"><i class="fas fa-comments me-2"></i> Onay Bekleyen Yorumlar</h2>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-2">@Model.PendingTestimonialCount adet onay bekleyen müşteri yorumu bulunmaktadır.</p>
+                        <a href="@Url.Action("Testimonials", "Admin")" class="btn btn-warning btn-sm">
+                            <i class="fas fa-eye me-1"></i> Yorumları Görüntüle
+                        </a>
+                    </div>
+                </div>
+            }
+
+            @if (Model.HighPriorityDocuments > 0)
+            {
+                <div class="card mb-4 animate__animated animate__fadeInRight animate__delay-7s border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h2 class="h5 mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Acil Belgeler</h2>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-2">@Model.HighPriorityDocuments adet yüksek öncelikli belge bekliyor!</p>
+                        <a href="@Url.Action("Documents", "Admin")" class="btn btn-danger btn-sm">
+                            <i class="fas fa-eye me-1"></i> Belgeleri Görüntüle
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

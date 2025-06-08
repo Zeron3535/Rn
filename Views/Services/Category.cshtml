@@ -1,0 +1,109 @@
+@model ServiceCategory
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["MetaDescription"] = !string.IsNullOrEmpty(Model.SeoDescription) ? Model.SeoDescription : $"İzmir Balçova'da profesyonel {Model.Name.ToLower()} hizmetleri. Tina Kuaför'de kaliteli ve uygun fiyatlı hizmetler için hemen randevu alın.";
+    ViewData["MetaKeywords"] = !string.IsNullOrEmpty(Model.SeoKeywords) ? Model.SeoKeywords : $"İzmir {Model.Name}, İzmir Balçova {Model.Name}, Tina Kuaför {Model.Name}";
+}
+
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Services")">Hizmetlerim</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <h1 class="mb-4">@Model.Name</h1>
+
+    @if (!string.IsNullOrEmpty(Model.Description))
+    {
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <p class="lead">@Model.Description</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="@Url.Action("Index", "Appointments")" class="btn btn-primary">
+                    <i class="fas fa-calendar-alt me-2"></i> Hemen Randevu Al
+                </a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <p class="lead">
+                    Tina Kuaför'de profesyonel olarak, en kaliteli ürünleri kullanarak size özel @Model.Name.ToLower() hizmetleri sunuyorum.
+                    Aşağıda hizmetlerim ve fiyatlarım hakkında bilgi bulabilirsiniz.
+                </p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="@Url.Action("Index", "Appointments")" class="btn btn-primary">
+                    <i class="fas fa-calendar-alt me-2"></i> Hemen Randevu Al
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (Model.Services.Any())
+    {
+        <div class="row">
+            @foreach (var service in Model.Services)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 service-card">
+                        <div class="card-body">
+                            <h2 class="card-title h4">@service.Name</h2>
+                            @if (!string.IsNullOrEmpty(service.Description))
+                            {
+                                <p class="card-text">@service.Description</p>
+                            }
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="service-price">₺@service.Price.ToString("N0")</span>
+                                <a href="@Url.Action("Details", "Services", new { slug = service.UrlSlug })" class="btn btn-outline-primary">
+                                    Daha Fazla
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            Bu kategoride henüz hizmet bulunmamaktadır.
+        </div>
+    }
+
+    <div class="mt-5">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Randevu Alın</h2>
+                <p class="card-text">
+                    @Model.Name hizmetlerim hakkında daha fazla bilgi almak veya randevu oluşturmak için bana ulaşabilirsiniz.
+                    Telefonla veya WhatsApp üzerinden iletişime geçebilir ya da online randevu sistemimi kullanabilirsiniz.
+                </p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="@Url.Action("Index", "Appointments")" class="btn btn-primary">
+                        <i class="fas fa-calendar-alt me-2"></i> Online Randevu
+                    </a>
+                    <a href="https://wa.me/905375890642" target="_blank" class="btn btn-success">
+                        <i class="fab fa-whatsapp me-2"></i> WhatsApp ile İletişim
+                    </a>
+                    <a href="tel:+905375890642" class="btn btn-outline-secondary">
+                        <i class="fas fa-phone me-2"></i> 0537 589 06 42
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="@Url.Action("Index", "Services")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> Tüm Hizmetlere Dön
+        </a>
+    </div>
+</div>

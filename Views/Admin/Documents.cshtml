@@ -1,0 +1,110 @@
+@model List<BusinessDocument>
+@{
+    ViewData["Title"] = "Belge/Not Yönetimi";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">Belge/Not Yönetimi</h1>
+        <a href="@Url.Action("DocumentCreate")" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i> Yeni Belge/Not Ekle
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Toplam Belge</h5>
+                    <h3 class="mb-0">@Model.Count</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Bekleyen</h5>
+                    <h3 class="mb-0">@Model.Count(d => !d.IsCompleted)</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Yüksek Öncelik</h5>
+                    <h3 class="mb-0">@Model.Count(d => !d.IsCompleted && d.Priority == "Yüksek")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Tamamlanan</h5>
+                    <h3 class="mb-0">@Model.Count(d => d.IsCompleted)</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (Model.Any())
+        {
+            @foreach (var document in Model.OrderByDescending(d => d.CreatedAt))
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">@document.Title</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@document.Content</p>
+                            
+                            @if (!string.IsNullOrEmpty(document.Category))
+                            {
+                                <p class="mb-2">
+                                    <small class="text-muted">Kategori:</small>
+                                    <span class="badge bg-info">@document.Category</span>
+                                </p>
+                            }
+
+                            <p class="mb-0">
+                                <small class="text-muted">
+                                    Oluşturulma: @document.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                                </small>
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="btn-group">
+                                @if (!document.IsCompleted)
+                                {
+                                    <form asp-action="DocumentComplete" asp-route-id="@document.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-check me-1"></i> Tamamla
+                                        </button>
+                                    </form>
+                                }
+                                <a href="@Url.Action("DocumentEdit", new { id = document.Id })" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-edit me-1"></i> Düzenle
+                                </a>
+                                <form asp-action="DocumentDelete" asp-route-id="@document.Id" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="fas fa-trash me-1"></i> Sil
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Henüz belge/not bulunmamaktadır.
+                </div>
+            </div>
+        }
+    </div>
+</div> 

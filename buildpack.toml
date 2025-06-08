@@ -1,0 +1,23 @@
+[buildpack]
+id = "dotnet"
+name = "Dotnet Buildpack"
+version = "1.0.0"
+
+[metadata]
+  [metadata.configuration]
+    [[metadata.configuration.variables]]
+    name = "BP_DOTNET_VERSION"
+    default = "6.0.x"
+
+[detect]
+  [detect.test]
+    paths = ["*.csproj", "*.sln", "Program.cs", "Startup.cs"]
+  [detect.include]
+    paths = ["Program.cs", "TinaKuafor.csproj"]
+
+[build]
+  include = ["**/*.cs", "**/*.csproj", "**/*.sln"]
+  exclude = ["bin", "obj"]
+
+[run]
+  command = "dotnet ./bin/Release/net6.0/publish/TinaKuafor.dll"

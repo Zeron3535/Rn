@@ -1,0 +1,98 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Yönetici Girişi";
+    Layout = "_Layout";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="login-container animate__animated animate__fadeIn">
+                <div class="login-logo text-center mb-4 animate__animated animate__fadeInDown">
+                    <i class="fas fa-user-cog fa-4x text-primary"></i>
+                    <h1 class="login-title mt-3">Tina Kuaför Yönetim</h1>
+                </div>
+
+                <div class="card animate__animated animate__fadeInUp animate__delay-1s">
+                    <div class="card-body">
+                        <h2 class="h4 mb-4 text-center">Yönetici Girişi</h2>
+
+                        <form asp-action="Login" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                            <div class="mb-3 animate__animated animate__fadeInLeft animate__delay-2s">
+                                <label asp-for="Password" class="form-label">Şifre</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input asp-for="Password" type="password" class="form-control" placeholder="Şifrenizi girin" required />
+                                </div>
+                                <span asp-validation-for="Password" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid gap-2 animate__animated animate__fadeInUp animate__delay-3s">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-sign-in-alt me-2"></i> Giriş Yap
+                                </button>
+                                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i> Ana Sayfaya Dön
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="mt-4 text-center text-muted animate__animated animate__fadeIn animate__delay-4s">
+                    <small>
+                        <i class="fas fa-shield-alt me-1"></i> Yönetici paneline erişim için geçerli şifre gereklidir.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@section Styles {
+    <style>
+        .login-container {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        }
+
+        .login-logo i {
+            color: var(--primary-color);
+            transition: var(--hover-transition);
+        }
+
+        .login-container:hover .login-logo i {
+            transform: scale(1.1);
+        }
+
+        .login-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+    </style>
+}
